@@ -4,14 +4,18 @@
     "strict": true,
     "paths": {
       "@/*": [
-        "./app/*"
+        "./app/*",
+        "./app/tabs/*"
       ],
       "@/assets/*": [
         "./assets/*"
       ],
       "@/components/*": [
         "./components/*"
-      ]
+      ],
+      "@/constants/*": [
+        "./constants/*"
+      ],
     }
   }
 }

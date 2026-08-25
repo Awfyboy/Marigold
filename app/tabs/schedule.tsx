@@ -1,10 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import Colors from '@/constants/colors';
 
-export default function App() {
+export default function ScheduleScreen() {
   return (
     <View style={styles.container}>
-      <Text>Welcome to Marigold!</Text>
+      <Text>Schedule</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -13,7 +14,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     alignItems: 'center',
     justifyContent: 'center',
   },
