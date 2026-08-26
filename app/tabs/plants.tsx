@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 import Colors from '@/constants/colors';
 import IconButton from '@/components/IconButton';
@@ -14,11 +15,12 @@ const FILTER_OPTIONS = [
 ];
 
 export default function PlantsScreen() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
 
   const handleAddPlant = () => {
-    console.log('Add new plant');
+    router.push('/add-plant');
   };
 
   return (
