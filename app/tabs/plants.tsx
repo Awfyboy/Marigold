@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import Colors from '@/constants/colors';
 import IconButton from '@/components/IconButton';
 import SearchBar from '@/components/SearchBar';
-import FilterButton from '@/components/FilterButton';
+import BasicButton from '@/components/BasicButton';
 
 const FILTER_OPTIONS = [
   { label: 'All', icon: 'grid' as const },
@@ -28,7 +28,8 @@ export default function PlantsScreen() {
       {/* Add button */}
       <View style={styles.header}>
         <IconButton 
-          icon="add" 
+          icon="add"
+          label="Add Plant" 
           onPress={handleAddPlant}
           size={28}
           color={Colors.navGreen}
@@ -50,7 +51,7 @@ export default function PlantsScreen() {
           contentContainerStyle={styles.filtersContent}
         >
           {FILTER_OPTIONS.map((filter) => (
-            <FilterButton
+            <BasicButton
               key={filter.label}
               label={filter.label}
               icon={filter.icon}

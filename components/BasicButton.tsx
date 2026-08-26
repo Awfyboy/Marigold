@@ -9,7 +9,7 @@ type Props = {
   onPress: () => void;
 };
 
-export default function FilterButton({ label, icon, isSelected, onPress }: Props) {
+export default function BasicButton({ label, icon, isSelected, onPress }: Props) {
   return (
     <Pressable style={[styles.button, isSelected && styles.selectedButton]} onPress={onPress}>
       <View style={styles.content}>
