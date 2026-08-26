@@ -1,0 +1,33 @@
+import { Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+type Props = {
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+  size?: number;
+  color?: string;
+  square?: boolean;
+};
+
+export default function IconButton({ icon, onPress, size = 24, color = '#7FD856', square = false }: Props) {
+  return (
+    <Pressable style={[styles.iconButton, square && { ...styles.square, borderColor: color }]} onPress={onPress}>
+      <Ionicons name={icon} size={size} color={color} />
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  iconButton: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  square: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderWidth: 2,
+  },
+});
