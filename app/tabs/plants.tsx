@@ -29,7 +29,6 @@ export default function PlantsScreen() {
       <View style={styles.header}>
         <IconButton 
           icon="add"
-          label="Add Plant" 
           onPress={handleAddPlant}
           size={28}
           color={Colors.navGreen}
