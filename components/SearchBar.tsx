@@ -1,6 +1,7 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Props = {
   placeholder?: string;
@@ -45,5 +46,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 16,
     color: '#000',
+    fontFamily: Fonts.body,
   },
 });

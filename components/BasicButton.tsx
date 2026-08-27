@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Props = {
   label: string;
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.navGreen,
     fontWeight: '500',
+    fontFamily: Fonts.body,
   },
   selectedLabel: {
     color: Colors.navYellow,

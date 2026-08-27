@@ -2,6 +2,7 @@ import { StyleSheet, Pressable, View, Text, Modal, FlatList } from 'react-native
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Props = {
   label?: string;
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.navGreen,
     marginBottom: 6,
+    fontFamily: Fonts.body,
   },
   button: {
     backgroundColor: Colors.bgYellow,
@@ -114,11 +116,13 @@ const styles = StyleSheet.create({
     color: Colors.errorRed,
     fontSize: 12,
     marginTop: 4,
+    fontFamily: Fonts.body,
   },
   buttonText: {
     fontSize: 16,
     color: '#000',
     flex: 1,
+    fontFamily: Fonts.body,
   },
   placeholder: {
     color: Colors.navGreen,
@@ -147,6 +151,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: '#000',
+    fontFamily: Fonts.body,
   },
   selectedOptionText: {
     color: Colors.navGreen,

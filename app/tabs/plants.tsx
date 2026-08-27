@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 import IconButton from '@/components/IconButton';
 import SearchBar from '@/components/SearchBar';
 import BasicButton from '@/components/BasicButton';
@@ -126,9 +127,9 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 26,
     color: Colors.navGreen,
+    fontFamily: Fonts.title,
   },
 
   filtersWrapper: {
@@ -157,12 +158,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: Colors.navGreen,
+    fontFamily: Fonts.body,
   },
 
   emptySubtext: {
     fontSize: 12,
     color: Colors.navGreen,
     marginTop: 4,
+    fontFamily: Fonts.body,
   },
 
   gridContent: {

@@ -1,6 +1,7 @@
 import { StyleSheet, Pressable, View, Text, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Option = {
   label: string;
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
     color: Colors.navGreen,
     paddingHorizontal: 16,
     paddingVertical: 10,
+    fontFamily: Fonts.title,
   },
   option: {
     flexDirection: 'row',
@@ -83,6 +85,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: '#000',
+    fontFamily: Fonts.body,
   },
   cancelText: {
     fontSize: 16,

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 import ChoiceModal from '@/components/ChoiceModal';
 
 type Props = {
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.navGreen,
     marginTop: 12,
+    fontFamily: Fonts.body,
   },
   placeholderSubtext: {
     fontSize: 12,
@@ -119,6 +121,7 @@ const styles = StyleSheet.create({
     marginLeft: 28,
     marginRight: 28,
     textAlign: 'center',
+    fontFamily: Fonts.body,
   },
   imageContainer: {
     borderRadius: 8,
@@ -143,6 +146,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: Fonts.body,
   },
   placeholderError: {
     borderColor: Colors.errorRed,
@@ -158,5 +162,6 @@ const styles = StyleSheet.create({
     color: Colors.errorRed,
     fontSize: 12,
     marginTop: 4,
+    fontFamily: Fonts.body,
   },
 });

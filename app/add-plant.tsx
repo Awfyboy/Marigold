@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
 
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 import IconButton from '@/components/IconButton';
 import PhotoField from '@/components/PhotoField';
 import TextField from '@/components/TextField';
@@ -273,6 +274,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 4,
     marginHorizontal: 16,
+    fontFamily: Fonts.title,
   },
   fieldLabel: {
     fontSize: 14,
@@ -281,6 +283,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
     marginHorizontal: 16,
+    fontFamily: Fonts.body,
   },
   required: {
     color: Colors.errorRed,
@@ -290,6 +293,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
     marginHorizontal: 16,
+    fontFamily: Fonts.body,
   },
   typesRow: {
     flexDirection: 'row',
@@ -318,5 +322,6 @@ const styles = StyleSheet.create({
     color: Colors.navYellow,
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: Fonts.body,
   },
 });

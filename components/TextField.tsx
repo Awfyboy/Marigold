@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Props = {
   label?: string;
@@ -59,6 +60,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.navGreen,
     marginBottom: 6,
+    fontFamily: Fonts.body,
   },
   required: {
     color: Colors.errorRed,
@@ -70,6 +72,7 @@ const styles = StyleSheet.create({
     color: Colors.errorRed,
     fontSize: 12,
     marginTop: 4,
+    fontFamily: Fonts.body,
   },
   input: {
     backgroundColor: Colors.bgYellow,
@@ -80,6 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
     color: '#000',
+    fontFamily: Fonts.body,
   },
   multilineInput: {
     minHeight: 80,

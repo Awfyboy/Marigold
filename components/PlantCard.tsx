@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Herb: 'leaf',
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.navGreen,
+    fontFamily: Fonts.title,
   },
   metaRow: {
     flexDirection: 'row',
@@ -82,5 +84,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#000',
     flexShrink: 1,
+    fontFamily: Fonts.body,
   },
 });

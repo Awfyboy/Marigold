@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/colors';
+import Fonts from '@/constants/fonts';
 
 type Props = {
   icon: keyof typeof Ionicons.glyphMap;
@@ -41,5 +42,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.navGreen,
     fontWeight: '500',
+    fontFamily: Fonts.body,
   },
 });
