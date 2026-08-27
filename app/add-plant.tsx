@@ -1,4 +1,13 @@
-import { StyleSheet, Text, View, ScrollView, Pressable, Alert } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
 
@@ -123,7 +132,11 @@ export default function AddPlantScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={styles.container}>
+      {/* Edge-to-edge disables Android's adjustResize, so padding is needed on both platforms */}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior="padding"
+      >
         {/* Back button */}
         <View style={styles.header}>
           <IconButton
@@ -138,6 +151,7 @@ export default function AddPlantScreen() {
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           {/* Category 1: Photo */}
           <Text style={styles.sectionTitle}>
@@ -245,7 +259,7 @@ export default function AddPlantScreen() {
             </Text>
           </Pressable>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 }
