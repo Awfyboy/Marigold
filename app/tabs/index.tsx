@@ -16,8 +16,11 @@ import Fonts from '@/constants/fonts';
 import {
   getPlants,
   markWatered,
+  markFertilized,
   getNextWateringDate,
+  getNextFertilizingDate,
   getWateringIntervalDays,
+  getFertilizingIntervalDays,
   updatePlant,
   Plant,
 } from '@/utils/plantStorage';
@@ -50,6 +53,15 @@ function getDaysOverdue(plant: Plant): number {
   return Math.round((today.getTime() - due.getTime()) / 86400000);
 }
 
+// Whole days between the fertilizing due date and today (positive = overdue)
+function getFertilizingDaysOverdue(plant: Plant): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = getNextFertilizingDate(plant);
+  due.setHours(0, 0, 0, 0);
+  return Math.round((today.getTime() - due.getTime()) / 86400000);
+}
+
 function formatDueDate(date: Date): string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -76,23 +88,48 @@ export default function Index() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Plants due today or overdue
+  // Plants due today or overdue (watering)
   const dueToday = plants
     .filter((plant) => getNextWateringDate(plant).getTime() <= today.getTime() + 86400000 - 1)
     .sort(
       (a, b) => getNextWateringDate(a).getTime() - getNextWateringDate(b).getTime()
     );
 
-  // Overdue = due date already passed
-  const overdueCount = plants.filter((plant) => getDaysOverdue(plant) > 0).length;
-  const dueTodayCount = dueToday.length - overdueCount;
-
-  // Upcoming: next 5 due after today
-  const upcoming = plants
-    .filter((plant) => getNextWateringDate(plant).getTime() > today.getTime() + 86400000 - 1)
+  // Plants due today or overdue (fertilizing)
+  const dueTodayFertilizing = plants
+    .filter((plant) => getNextFertilizingDate(plant).getTime() <= today.getTime() + 86400000 - 1)
     .sort(
-      (a, b) => getNextWateringDate(a).getTime() - getNextWateringDate(b).getTime()
-    )
+      (a, b) => getNextFertilizingDate(a).getTime() - getNextFertilizingDate(b).getTime()
+    );
+
+  // Combined overdue/due-today counts for the greeting (watering or fertilizing)
+  const overdueCount = plants.filter(
+    (plant) => getDaysOverdue(plant) > 0 || getFertilizingDaysOverdue(plant) > 0
+  ).length;
+  const dueTodayCount = plants.filter(
+    (plant) =>
+      (getNextWateringDate(plant).getTime() <= today.getTime() + 86400000 - 1 ||
+        getNextFertilizingDate(plant).getTime() <= today.getTime() + 86400000 - 1) &&
+      getDaysOverdue(plant) <= 0 &&
+      getFertilizingDaysOverdue(plant) <= 0
+  ).length;
+
+  // Upcoming: next 5 due actions after today (watering or fertilizing)
+  const upcoming = plants
+    .flatMap((plant) => {
+      const waterDue = getNextWateringDate(plant);
+      const fertDue = getNextFertilizingDate(plant);
+      const cutoff = today.getTime() + 86400000 - 1;
+      const actions: { plant: Plant; action: string; dueDate: Date }[] = [];
+      if (waterDue.getTime() > cutoff) {
+        actions.push({ plant, action: 'Water', dueDate: waterDue });
+      }
+      if (fertDue.getTime() > cutoff) {
+        actions.push({ plant, action: 'Fertilize', dueDate: fertDue });
+      }
+      return actions;
+    })
+    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())
     .slice(0, 5);
 
   // Most recently added plants for the preview
@@ -104,6 +141,11 @@ export default function Index() {
 
   const handleMarkWatered = async (plant: Plant) => {
     await markWatered(plant.id);
+    setPlants(await getPlants());
+  };
+
+  const handleMarkFertilized = async (plant: Plant) => {
+    await markFertilized(plant.id);
     setPlants(await getPlants());
   };
 
@@ -126,6 +168,28 @@ export default function Index() {
     const backdated = new Date();
     backdated.setDate(backdated.getDate() - interval);
     await updatePlant({ ...notDue, lastWatered: backdated.toISOString() });
+    setPlants(await getPlants());
+  };
+
+  // TEMPORARY dev helpers: backdate a plant's lastFertilized to test fertilizing due/overdue states.
+  const simulateFertilizeDue = async (extraDaysOverdue: number) => {
+    if (plants.length === 0) return;
+    const plant = plants[plants.length - 1];
+    const interval = getFertilizingIntervalDays(plant.fertilizingFrequency);
+    const backdated = new Date();
+    backdated.setDate(backdated.getDate() - interval - extraDaysOverdue);
+    await updatePlant({ ...plant, lastFertilized: backdated.toISOString() });
+    setPlants(await getPlants());
+  };
+
+  // TEMPORARY dev helper: makes a plant that is NOT already fertilizing-due become due today.
+  const simulateAnotherFertilizeDue = async () => {
+    const notDue = plants.find((plant) => getFertilizingDaysOverdue(plant) <= 0);
+    if (!notDue) return;
+    const interval = getFertilizingIntervalDays(notDue.fertilizingFrequency);
+    const backdated = new Date();
+    backdated.setDate(backdated.getDate() - interval);
+    await updatePlant({ ...notDue, lastFertilized: backdated.toISOString() });
     setPlants(await getPlants());
   };
 
@@ -193,10 +257,27 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Today's Tasks */}
+        {/* Fertilize today card */}
+        <View style={styles.waterCard}>
+          <View style={styles.waterCardLeft}>
+            <Ionicons name="leaf" size={24} color={Colors.navGreen} />
+            <View style={styles.waterCardText}>
+              <Text style={styles.waterCardTitle}>
+                Fertilize today{dueTodayFertilizing.length > 0 ? ` — ${dueTodayFertilizing.length}` : ''}
+              </Text>
+              <Text style={styles.waterCardSubtitle}>
+                {dueTodayFertilizing.length > 0
+                  ? `${dueTodayFertilizing.length} plant${dueTodayFertilizing.length > 1 ? 's' : ''} need${dueTodayFertilizing.length > 1 ? '' : 's'} fertilizing`
+                  : 'Nothing to fertilize right now'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Today's Watering Tasks */}
         {dueToday.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Today's Tasks</Text>
+            <Text style={styles.sectionTitle}>Today's Watering Tasks</Text>
             <View style={styles.taskList}>
               {dueToday.map((plant) => (
                 <View key={plant.id} style={styles.taskCard}>
@@ -230,33 +311,70 @@ export default function Index() {
           </>
         )}
 
+        {/* Today's Fertilizing Tasks */}
+        {dueTodayFertilizing.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Today's Fertilizing Tasks</Text>
+            <View style={styles.taskList}>
+              {dueTodayFertilizing.map((plant) => (
+                <View key={plant.id} style={styles.taskCard}>
+                  <Image source={{ uri: plant.imageUri }} style={styles.taskImage} />
+                  <View style={styles.taskInfo}>
+                    <Text style={styles.taskName} numberOfLines={1}>
+                      {plant.name}
+                    </Text>
+                    <View style={styles.taskMetaRow}>
+                      <Text style={styles.taskAction}>Fertilize</Text>
+                      {getFertilizingDaysOverdue(plant) > 0 && (
+                        <View style={styles.overdueBadge}>
+                          <Ionicons name="warning" size={11} color="#ffffff" />
+                          <Text style={styles.overdueBadgeText}>
+                            {getFertilizingDaysOverdue(plant)}d overdue
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                  <Pressable
+                    style={styles.doneButton}
+                    onPress={() => handleMarkFertilized(plant)}
+                  >
+                    <Ionicons name="checkmark" size={16} color={Colors.navYellow} />
+                    <Text style={styles.doneButtonText}>Done</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
         {/* Upcoming */}
         {upcoming.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Upcoming</Text>
             <View style={styles.upcomingCard}>
-              {upcoming.map((plant, index) => {
-                const dueDate = getNextWateringDate(plant);
+              {upcoming.map((item, index) => {
+                const dueDate = item.dueDate;
                 const showDateHeader =
                   index === 0 ||
-                  formatDueDate(getNextWateringDate(upcoming[index - 1])) !==
+                  formatDueDate(upcoming[index - 1].dueDate) !==
                     formatDueDate(dueDate);
 
                 return (
-                  <View key={plant.id}>
+                  <View key={`${item.plant.id}-${item.action}`}>
                     {showDateHeader && (
                       <Text style={styles.upcomingDate}>{formatDueDate(dueDate)}</Text>
                     )}
                     <View style={styles.upcomingRow}>
                       <Ionicons
-                        name={getPlantTypeIcon(plant)}
+                        name={getPlantTypeIcon(item.plant)}
                         size={16}
                         color={Colors.navGreen}
                       />
                       <Text style={styles.upcomingPlantName} numberOfLines={1}>
-                        {plant.name}
+                        {item.plant.name}
                       </Text>
-                      <Text style={styles.upcomingAction}>Water</Text>
+                      <Text style={styles.upcomingAction}>{item.action}</Text>
                     </View>
                   </View>
                 );
@@ -290,7 +408,7 @@ export default function Index() {
           ))}
         </View>
 
-        {/* TEMPORARY dev helpers for testing "Water today". Remove before release. */}
+        {/* TEMPORARY dev helpers. Remove before release. */}
         <View style={styles.debugRow}>
           <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
             <Text style={styles.debugButtonText}>
@@ -304,6 +422,19 @@ export default function Index() {
           </Pressable>
           <Pressable style={styles.debugButton} onPress={simulateAnotherDue}>
             <Text style={styles.debugButtonText}>DEV: Make another plant due today</Text>
+          </Pressable>
+          <Pressable style={styles.debugButton} onPress={() => simulateFertilizeDue(0)}>
+            <Text style={styles.debugButtonText}>
+              DEV: Make "{plants[plants.length - 1]?.name}" need fertilizing today
+            </Text>
+          </Pressable>
+          <Pressable style={styles.debugButton} onPress={() => simulateFertilizeDue(3)}>
+            <Text style={styles.debugButtonText}>
+              DEV: Make "{plants[plants.length - 1]?.name}" 3 days fertilizing-overdue
+            </Text>
+          </Pressable>
+          <Pressable style={styles.debugButton} onPress={simulateAnotherFertilizeDue}>
+            <Text style={styles.debugButtonText}>DEV: Make another plant need fertilizing today</Text>
           </Pressable>
         </View>
       </ScrollView>
