@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
 import { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '@/constants/colors';
 import IconButton from '@/components/IconButton';

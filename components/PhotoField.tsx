@@ -1,7 +1,9 @@
 import { StyleSheet, Pressable, View, Image, Text } from 'react-native';
+import { useState } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
+import ChoiceModal from '@/components/ChoiceModal';
 
 type Props = {
   imageUri?: string;
@@ -11,13 +13,37 @@ type Props = {
 };
 
 export default function PhotoField({ imageUri, onSelectImage, required = false, error }: Props) {
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
+  const [chooserVisible, setChooserVisible] = useState(false);
+
+  const openPicker = async (source: 'camera' | 'album') => {
+    const permissions =
+      source === 'camera'
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissions.granted) {
+      alert(
+        source === 'camera'
+          ? 'Please allow camera access to take a photo.'
+          : 'Please allow photo library access to select a photo.'
+      );
+      return;
+    }
+
+    const result =
+      source === 'camera'
+        ? await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+          })
+        : await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+          });
 
     if (!result.canceled && result.assets.length > 0) {
       onSelectImage(result.assets[0].uri);
@@ -29,7 +55,7 @@ export default function PhotoField({ imageUri, onSelectImage, required = false, 
       {imageUri ? (
         <View style={[styles.imageContainer, error && styles.imageContainerError]}>
           <Image source={{ uri: imageUri }} style={styles.image} />
-          <Pressable style={styles.changeButton} onPress={pickImage}>
+          <Pressable style={styles.changeButton} onPress={() => setChooserVisible(true)}>
             <Ionicons name="camera" size={20} color="#ffffff" />
             <Text style={styles.changeText}>Change Photo</Text>
           </Pressable>
@@ -38,17 +64,29 @@ export default function PhotoField({ imageUri, onSelectImage, required = false, 
         <>
           <Pressable
             style={[styles.placeholder, error && styles.placeholderError]}
-            onPress={pickImage}
+            onPress={() => setChooserVisible(true)}
           >
             <Ionicons name="camera" size={48} color={error ? Colors.errorRed : Colors.navGreen} />
             <Text style={[styles.placeholderText, error && styles.placeholderTextError]}>
               Select a Photo
             </Text>
-            <Text style={styles.placeholderSubtext}>Camera or Album</Text>
+            <Text style={styles.placeholderSubtext}>Take a photo with your camera or choose one from your album</Text>
           </Pressable>
           {error && <Text style={styles.errorText}>{error}</Text>}
         </>
       )}
+
+      {/* Camera / Album chooser */}
+      <ChoiceModal
+        visible={chooserVisible}
+        title="Select a Photo"
+        onClose={() => setChooserVisible(false)}
+        options={[
+          { label: 'Take Photo', icon: 'camera', onPress: () => openPicker('camera') },
+          { label: 'Choose from Album', icon: 'images', onPress: () => openPicker('album') },
+          { label: 'Cancel', icon: 'close', isCancel: true, onPress: () => {} },
+        ]}
+      />
     </View>
   );
 }
@@ -77,7 +115,10 @@ const styles = StyleSheet.create({
   placeholderSubtext: {
     fontSize: 12,
     color: Colors.navGreen,
-    marginTop: 4,
+    marginTop: 8,
+    marginLeft: 28,
+    marginRight: 28,
+    textAlign: 'center',
   },
   imageContainer: {
     borderRadius: 8,
