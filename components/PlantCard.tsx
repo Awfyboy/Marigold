@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/colors';
 import Fonts from '@/constants/fonts';
@@ -15,11 +15,12 @@ type Props = {
   location: string;
   types: string[];
   onPress?: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default function PlantCard({ imageUri, name, location, types, onPress }: Props) {
+export default function PlantCard({ imageUri, name, location, types, onPress, style }: Props) {
   return (
-    <Pressable style={styles.card} onPress={onPress}>
+    <Pressable style={[styles.card, style]} onPress={onPress}>
       {/* Header image */}
       <Image source={{ uri: imageUri }} style={styles.image} />
 
@@ -53,7 +54,6 @@ export default function PlantCard({ imageUri, name, location, types, onPress }: 
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     borderWidth: 1,

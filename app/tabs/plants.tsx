@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, FlatList, useWindowDimensions } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 
@@ -17,11 +17,20 @@ const FILTER_OPTIONS = [
   { label: 'Fruit', icon: 'nutrition' as const },
 ];
 
+const NUM_COLUMNS = 2;
+const GRID_GAP = 12;
+const GRID_PADDING = 16;
+
 export default function PlantsScreen() {
   const router = useRouter();
+  const { width: windowWidth } = useWindowDimensions();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [plants, setPlants] = useState<Plant[]>([]);
+
+  // Exact half-width so cards never stretch, even with an odd number of plants
+  const cardWidth =
+    (windowWidth - GRID_PADDING * 2 - GRID_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
 
   // Reload plants every time the screen comes into focus
   useFocusEffect(
@@ -91,7 +100,7 @@ export default function PlantsScreen() {
         <FlatList
           data={filteredPlants}
           keyExtractor={(item) => item.id}
-          numColumns={2}
+          numColumns={NUM_COLUMNS}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.gridContent}
           renderItem={({ item }) => (
@@ -100,6 +109,7 @@ export default function PlantsScreen() {
               name={item.name}
               location={item.location}
               types={item.types}
+              style={{ width: cardWidth }}
             />
           )}
         />
@@ -166,11 +176,11 @@ const styles = StyleSheet.create({
   },
 
   gridContent: {
-    padding: 16,
-    gap: 12,
+    padding: GRID_PADDING,
+    gap: GRID_GAP,
   },
 
   row: {
-    gap: 12,
+    gap: GRID_GAP,
   },
 });
