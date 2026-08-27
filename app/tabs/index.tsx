@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
 
   // Water today card
   waterCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   taskCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
 
   // Upcoming
   upcomingCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,
@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   previewCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,

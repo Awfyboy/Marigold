@@ -81,6 +81,7 @@ export default function EditPlantScreen() {
     types?: string;
     location?: string;
     wateringFrequency?: string;
+    fertilizingFrequency?: string;
     sunlight?: string;
   }>({});
 
@@ -97,6 +98,7 @@ export default function EditPlantScreen() {
         setSelectedTypes(found.types);
         setLocation(found.location);
         setWateringFrequency(found.wateringFrequency);
+        setFertilizingFrequency(found.fertilizingFrequency);
         setSunlight(found.sunlight);
         setNotes(found.notes);
       } else {
@@ -115,6 +117,7 @@ export default function EditPlantScreen() {
       JSON.stringify(selectedTypes) !== JSON.stringify(plant.types) ||
       location !== plant.location ||
       wateringFrequency !== plant.wateringFrequency ||
+      fertilizingFrequency !== plant.fertilizingFrequency ||
       sunlight !== plant.sunlight ||
       notes !== plant.notes);
 
@@ -139,6 +142,7 @@ export default function EditPlantScreen() {
     if (selectedTypes.length === 0) newErrors.types = 'Required';
     if (!location) newErrors.location = 'Required';
     if (!wateringFrequency) newErrors.wateringFrequency = 'Required';
+    if (!fertilizingFrequency) newErrors.fertilizingFrequency = 'Required';
     if (!sunlight) newErrors.sunlight = 'Required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -167,6 +171,7 @@ export default function EditPlantScreen() {
         types: selectedTypes,
         location,
         wateringFrequency,
+        fertilizingFrequency,
         sunlight,
         notes,
       });
@@ -311,6 +316,18 @@ export default function EditPlantScreen() {
               setErrors((prev) => ({ ...prev, wateringFrequency: undefined }));
             }}
             placeholder="Select watering frequency..."
+          />
+          <Dropdown
+            label="Fertilizing Frequency"
+            required
+            error={errors.fertilizingFrequency}
+            options={WATERING_OPTIONS}
+            selectedValue={fertilizingFrequency}
+            onSelect={(value) => {
+              setFertilizingFrequency(value);
+              setErrors((prev) => ({ ...prev, fertilizingFrequency: undefined }));
+            }}
+            placeholder="Select fertilizing frequency..."
           />
           <Dropdown
             label="Sunlight"
