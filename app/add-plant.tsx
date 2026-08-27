@@ -6,7 +6,6 @@ import {
   Pressable,
   Alert,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
