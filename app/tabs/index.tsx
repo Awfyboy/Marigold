@@ -17,6 +17,8 @@ import {
   getPlants,
   markWatered,
   getNextWateringDate,
+  getWateringIntervalDays,
+  updatePlant,
   Plant,
 } from '@/utils/plantStorage';
 
@@ -27,6 +29,15 @@ function getGreeting(): string {
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
+}
+
+// Whole days between the due date and today (positive = overdue)
+function getDaysOverdue(plant: Plant): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = getNextWateringDate(plant);
+  due.setHours(0, 0, 0, 0);
+  return Math.round((today.getTime() - due.getTime()) / 86400000);
 }
 
 function formatDueDate(date: Date): string {
@@ -79,6 +90,18 @@ export default function Index() {
 
   const handleMarkWatered = async (plant: Plant) => {
     await markWatered(plant.id);
+    setPlants(await getPlants());
+  };
+
+  // TEMPORARY dev helpers: backdate the last plant's lastWatered to test due/overdue states.
+  // Remove these buttons before release.
+  const simulateDue = async (extraDaysOverdue: number) => {
+    if (plants.length === 0) return;
+    const plant = plants[plants.length - 1];
+    const interval = getWateringIntervalDays(plant.wateringFrequency);
+    const backdated = new Date();
+    backdated.setDate(backdated.getDate() - interval - extraDaysOverdue);
+    await updatePlant({ ...plant, lastWatered: backdated.toISOString() });
     setPlants(await getPlants());
   };
 
@@ -150,7 +173,17 @@ export default function Index() {
                     <Text style={styles.taskName} numberOfLines={1}>
                       {plant.name}
                     </Text>
-                    <Text style={styles.taskAction}>Water</Text>
+                    <View style={styles.taskMetaRow}>
+                      <Text style={styles.taskAction}>Water</Text>
+                      {getDaysOverdue(plant) > 0 && (
+                        <View style={styles.overdueBadge}>
+                          <Ionicons name="warning" size={11} color="#ffffff" />
+                          <Text style={styles.overdueBadgeText}>
+                            {getDaysOverdue(plant)}d overdue
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
                   <Pressable
                     style={styles.doneButton}
@@ -223,6 +256,20 @@ export default function Index() {
               </Text>
             </Pressable>
           ))}
+        </View>
+
+        {/* TEMPORARY dev helpers for testing "Water today". Remove before release. */}
+        <View style={styles.debugRow}>
+          <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
+            <Text style={styles.debugButtonText}>
+              DEV: Make "{plants[plants.length - 1]?.name}" due today
+            </Text>
+          </Pressable>
+          <Pressable style={styles.debugButton} onPress={() => simulateDue(3)}>
+            <Text style={styles.debugButtonText}>
+              DEV: Make "{plants[plants.length - 1]?.name}" 3 days overdue
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
     </View>
@@ -377,11 +424,31 @@ const styles = StyleSheet.create({
     color: Colors.navGreen,
     fontFamily: Fonts.title,
   },
+  taskMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
   taskAction: {
     fontSize: 12,
     color: '#000',
     fontFamily: Fonts.body,
-    marginTop: 2,
+  },
+  overdueBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: Colors.errorRed,
+    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+  },
+  overdueBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '700',
+    fontFamily: Fonts.body,
   },
   doneButton: {
     flexDirection: 'row',
@@ -473,5 +540,28 @@ const styles = StyleSheet.create({
     color: Colors.navGreen,
     fontFamily: Fonts.title,
     padding: 8,
+  },
+
+  // TEMPORARY dev helper styles. Remove before release.
+  debugRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 24,
+    paddingHorizontal: 16,
+  },
+  debugButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#999999',
+  },
+  debugButtonText: {
+    fontSize: 12,
+    color: '#666666',
+    fontFamily: Fonts.body,
   },
 });
