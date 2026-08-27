@@ -9,6 +9,8 @@ type Props = {
   selectedValue: string;
   onSelect: (value: string) => void;
   placeholder?: string;
+  required?: boolean;
+  error?: string;
 };
 
 export default function Dropdown({
@@ -17,13 +19,23 @@ export default function Dropdown({
   selectedValue,
   onSelect,
   placeholder = 'Select an option...',
+  required = false,
+  error,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
-      <Pressable style={styles.button} onPress={() => setIsOpen(!isOpen)}>
+      {label && (
+        <Text style={styles.label}>
+          {label}
+          {required && <Text style={styles.required}> *</Text>}
+        </Text>
+      )}
+      <Pressable
+        style={[styles.button, error && styles.buttonError]}
+        onPress={() => setIsOpen(!isOpen)}
+      >
         <Text style={[styles.buttonText, !selectedValue && styles.placeholder]}>
           {selectedValue || placeholder}
         </Text>
@@ -33,6 +45,7 @@ export default function Dropdown({
           color={Colors.navGreen}
         />
       </Pressable>
+      {error && <Text style={styles.errorText}>{error}</Text>}
 
       <Modal visible={isOpen} transparent animationType="fade">
         <Pressable style={styles.overlay} onPress={() => setIsOpen(false)}>
@@ -81,7 +94,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   button: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,
@@ -90,6 +103,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  buttonError: {
+    borderColor: Colors.errorRed,
+  },
+  required: {
+    color: Colors.errorRed,
+  },
+  errorText: {
+    color: Colors.errorRed,
+    fontSize: 12,
+    marginTop: 4,
   },
   buttonText: {
     fontSize: 16,

@@ -16,7 +16,7 @@ export default function CounterField({
   value,
   onChangeValue,
   min = 1,
-  max = 365,
+  max = 999,
   unit = 'days',
 }: Props) {
   const handleDecrement = () => {
