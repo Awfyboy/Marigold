@@ -7,10 +7,12 @@ export type Plant = {
   types: string[];
   location: string;
   wateringFrequency: string;
+  fertilizingFrequency: string;
   sunlight: string;
   notes: string;
   createdAt: string;
   lastWatered?: string;
+  lastFertilized?: string;
 };
 
 const PLANTS_KEY = 'plants';
@@ -62,12 +64,26 @@ export async function deletePlant(id: string): Promise<void> {
   await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(filtered));
 }
 
+export async function deleteAllPlants(): Promise<void> {
+  await AsyncStorage.removeItem(PLANTS_KEY);
+}
+
 export async function markWatered(id: string): Promise<void> {
   const plants = await getPlants();
   const index = plants.findIndex((plant) => plant.id === id);
 
   if (index !== -1) {
     plants[index] = { ...plants[index], lastWatered: new Date().toISOString() };
+    await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(plants));
+  }
+}
+
+export async function markFertilized(id: string): Promise<void> {
+  const plants = await getPlants();
+  const index = plants.findIndex((plant) => plant.id === id);
+
+  if (index !== -1) {
+    plants[index] = { ...plants[index], lastFertilized: new Date().toISOString() };
     await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(plants));
   }
 }
@@ -81,8 +97,21 @@ const WATERING_INTERVALS: Record<string, number> = {
   'Once a month': 30,
 };
 
+const FERTILIZING_INTERVALS: Record<string, number> = {
+  Daily: 1,
+  'Every 2 days': 2,
+  'Every 3 days': 3,
+  'Every week': 7,
+  'Every 2 weeks': 14,
+  'Once a month': 30,
+};
+
 export function getWateringIntervalDays(frequency: string): number {
   return WATERING_INTERVALS[frequency] ?? 7;
+}
+
+export function getFertilizingIntervalDays(frequency: string): number {
+  return FERTILIZING_INTERVALS[frequency] ?? 30;
 }
 
 // Next due date = last watered (or created) + interval
@@ -92,5 +121,17 @@ export function getNextWateringDate(plant: Plant): Date {
     : new Date(plant.createdAt);
   const next = new Date(baseline);
   next.setDate(next.getDate() + getWateringIntervalDays(plant.wateringFrequency));
+  return next;
+}
+
+// Next due date = last fertilized (or created) + interval
+export function getNextFertilizingDate(plant: Plant): Date {
+  const baseline = plant.lastFertilized
+    ? new Date(plant.lastFertilized)
+    : new Date(plant.createdAt);
+  const next = new Date(baseline);
+  next.setDate(
+    next.getDate() + getFertilizingIntervalDays(plant.fertilizingFrequency)
+  );
   return next;
 }

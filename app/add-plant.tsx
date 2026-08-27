@@ -58,6 +58,7 @@ export default function AddPlantScreen() {
   // Category 3
   const [location, setLocation] = useState('');
   const [wateringFrequency, setWateringFrequency] = useState('');
+  const [fertilizingFrequency, setFertilizingFrequency] = useState('');
   const [sunlight, setSunlight] = useState('');
 
   // Category 4
@@ -70,6 +71,7 @@ export default function AddPlantScreen() {
     types?: string;
     location?: string;
     wateringFrequency?: string;
+    fertilizingFrequency?: string;
     sunlight?: string;
   }>({});
 
@@ -95,6 +97,7 @@ export default function AddPlantScreen() {
     if (selectedTypes.length === 0) newErrors.types = 'Required';
     if (!location) newErrors.location = 'Required';
     if (!wateringFrequency) newErrors.wateringFrequency = 'Required';
+    if (!fertilizingFrequency) newErrors.fertilizingFrequency = 'Required';
     if (!sunlight) newErrors.sunlight = 'Required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -113,6 +116,7 @@ export default function AddPlantScreen() {
         types: selectedTypes,
         location,
         wateringFrequency,
+        fertilizingFrequency,
         sunlight,
         notes,
       });
@@ -225,6 +229,18 @@ export default function AddPlantScreen() {
               setErrors((prev) => ({ ...prev, wateringFrequency: undefined }));
             }}
             placeholder="Select watering frequency..."
+          />
+          <Dropdown
+            label="Fertilizing Frequency"
+            required
+            error={errors.fertilizingFrequency}
+            options={WATERING_OPTIONS}
+            selectedValue={fertilizingFrequency}
+            onSelect={(value) => {
+              setFertilizingFrequency(value);
+              setErrors((prev) => ({ ...prev, fertilizingFrequency: undefined }));
+            }}
+            placeholder="Select fertilizing frequency..."
           />
           <Dropdown
             label="Sunlight"

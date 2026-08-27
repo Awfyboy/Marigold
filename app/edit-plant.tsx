@@ -68,6 +68,7 @@ export default function EditPlantScreen() {
   // Category 3
   const [location, setLocation] = useState('');
   const [wateringFrequency, setWateringFrequency] = useState('');
+  const [fertilizingFrequency, setFertilizingFrequency] = useState('');
   const [sunlight, setSunlight] = useState('');
 
   // Category 4

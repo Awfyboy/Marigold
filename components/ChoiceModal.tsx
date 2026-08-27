@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   sheet: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 12,
     width: '80%',
     paddingVertical: 8,

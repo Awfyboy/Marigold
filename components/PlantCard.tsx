@@ -54,7 +54,7 @@ export default function PlantCard({ imageUri, name, location, types, onPress, st
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: Colors.navGreen,

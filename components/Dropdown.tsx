@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   dropdown: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.bgYellow,
     borderRadius: 8,
     width: '80%',
     maxHeight: 300,

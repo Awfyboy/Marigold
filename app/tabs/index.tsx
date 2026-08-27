@@ -24,6 +24,16 @@ import {
 
 const PREVIEW_COUNT = 3;
 
+const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  Herb: 'leaf',
+  Flower: 'flower',
+  Fruit: 'nutrition',
+};
+
+function getPlantTypeIcon(plant: Plant): keyof typeof Ionicons.glyphMap {
+  return (plant.types.length > 0 && TYPE_ICONS[plant.types[0]]) || 'leaf';
+}
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -73,6 +83,10 @@ export default function Index() {
       (a, b) => getNextWateringDate(a).getTime() - getNextWateringDate(b).getTime()
     );
 
+  // Overdue = due date already passed
+  const overdueCount = plants.filter((plant) => getDaysOverdue(plant) > 0).length;
+  const dueTodayCount = dueToday.length - overdueCount;
+
   // Upcoming: next 5 due after today
   const upcoming = plants
     .filter((plant) => getNextWateringDate(plant).getTime() > today.getTime() + 86400000 - 1)
@@ -93,8 +107,7 @@ export default function Index() {
     setPlants(await getPlants());
   };
 
-  // TEMPORARY dev helpers: backdate the last plant's lastWatered to test due/overdue states.
-  // Remove these buttons before release.
+  // TEMPORARY dev helpers: backdate a plant's lastWatered to test due/overdue states.
   const simulateDue = async (extraDaysOverdue: number) => {
     if (plants.length === 0) return;
     const plant = plants[plants.length - 1];
@@ -102,6 +115,17 @@ export default function Index() {
     const backdated = new Date();
     backdated.setDate(backdated.getDate() - interval - extraDaysOverdue);
     await updatePlant({ ...plant, lastWatered: backdated.toISOString() });
+    setPlants(await getPlants());
+  };
+
+  // TEMPORARY dev helper: makes a plant that is NOT already due become due today.
+  const simulateAnotherDue = async () => {
+    const notDue = plants.find((plant) => getDaysOverdue(plant) <= 0);
+    if (!notDue) return;
+    const interval = getWateringIntervalDays(notDue.wateringFrequency);
+    const backdated = new Date();
+    backdated.setDate(backdated.getDate() - interval);
+    await updatePlant({ ...notDue, lastWatered: backdated.toISOString() });
     setPlants(await getPlants());
   };
 
@@ -139,9 +163,17 @@ export default function Index() {
           {getGreeting()} <Text style={styles.greetingEmoji}>🌱</Text>
         </Text>
         <Text style={styles.greetingSubtitle}>
-          {dueToday.length > 0
-            ? `You have ${dueToday.length} plant${dueToday.length > 1 ? 's' : ''} that need attention today.`
-            : 'All your plants are happy today!'}
+          {overdueCount > 0 && (
+            <Text style={styles.greetingHighlight}>
+              {overdueCount} plant{overdueCount > 1 ? 's are' : ' is'} overdue!
+              {dueTodayCount > 0 ? '\n' : ''}
+            </Text>
+          )}
+          {dueTodayCount > 0
+            ? `You have ${dueTodayCount} plant${dueTodayCount > 1 ? 's' : ''} due today.`
+            : overdueCount === 0
+              ? 'All your plants are happy today!'
+              : ''}
         </Text>
 
         {/* Water today card */}
@@ -217,7 +249,7 @@ export default function Index() {
                     )}
                     <View style={styles.upcomingRow}>
                       <Ionicons
-                        name="water"
+                        name={getPlantTypeIcon(plant)}
                         size={16}
                         color={Colors.navGreen}
                       />
@@ -269,6 +301,9 @@ export default function Index() {
             <Text style={styles.debugButtonText}>
               DEV: Make "{plants[plants.length - 1]?.name}" 3 days overdue
             </Text>
+          </Pressable>
+          <Pressable style={styles.debugButton} onPress={simulateAnotherDue}>
+            <Text style={styles.debugButtonText}>DEV: Make another plant due today</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -343,6 +378,10 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.body,
     paddingHorizontal: 16,
     marginTop: 4,
+  },
+  greetingHighlight: {
+    color: Colors.errorRed,
+    fontWeight: '700',
   },
 
   // Water today card
