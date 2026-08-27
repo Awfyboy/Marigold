@@ -86,9 +86,6 @@ export default function PlantsScreen() {
       {filteredPlants.length === 0 ? (
         <View style={styles.content}>
           <Text style={styles.emptyText}>No plants found</Text>
-          <Text style={styles.emptySubtext}>
-            Tap "Add Plants" to add your first plant
-          </Text>
         </View>
       ) : (
         <FlatList

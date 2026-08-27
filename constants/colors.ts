@@ -1,6 +1,6 @@
 const Colors = {
     bgYellow: '#fffffb',
-    navGreen: '#226966',
+    navGreen: '#236d6a',
     navYellow: '#dfff5e',
     navDarkYellow: '#b8e6c4',
     errorRed: '#d9534f',
