@@ -10,6 +10,7 @@ export type Plant = {
   sunlight: string;
   notes: string;
   createdAt: string;
+  lastWatered?: string;
 };
 
 const PLANTS_KEY = 'plants';
@@ -59,4 +60,37 @@ export async function deletePlant(id: string): Promise<void> {
   const plants = await getPlants();
   const filtered = plants.filter((plant) => plant.id !== id);
   await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(filtered));
+}
+
+export async function markWatered(id: string): Promise<void> {
+  const plants = await getPlants();
+  const index = plants.findIndex((plant) => plant.id === id);
+
+  if (index !== -1) {
+    plants[index] = { ...plants[index], lastWatered: new Date().toISOString() };
+    await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(plants));
+  }
+}
+
+const WATERING_INTERVALS: Record<string, number> = {
+  Daily: 1,
+  'Every 2 days': 2,
+  'Every 3 days': 3,
+  'Every week': 7,
+  'Every 2 weeks': 14,
+  'Once a month': 30,
+};
+
+export function getWateringIntervalDays(frequency: string): number {
+  return WATERING_INTERVALS[frequency] ?? 7;
+}
+
+// Next due date = last watered (or created) + interval
+export function getNextWateringDate(plant: Plant): Date {
+  const baseline = plant.lastWatered
+    ? new Date(plant.lastWatered)
+    : new Date(plant.createdAt);
+  const next = new Date(baseline);
+  next.setDate(next.getDate() + getWateringIntervalDays(plant.wateringFrequency));
+  return next;
 }
