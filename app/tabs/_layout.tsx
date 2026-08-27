@@ -6,8 +6,8 @@ import Fonts from '@/constants/fonts';
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
-    [Fonts.title]: require('../../assets/fonts/alegreya.bold.ttf'),
-    [Fonts.body]: require('../../assets/fonts/Lato-Regular.ttf'),
+    [Fonts.title]: require('@/assets/fonts/alegreya.bold.ttf'),
+    [Fonts.body]: require('@/assets/fonts/Lato-Regular.ttf'),
   });
 
   if (!fontsLoaded) {

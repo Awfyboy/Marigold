@@ -29,8 +29,7 @@ export default function PlantsScreen() {
   const [plants, setPlants] = useState<Plant[]>([]);
 
   // Exact half-width so cards never stretch, even with an odd number of plants
-  const cardWidth =
-    (windowWidth - GRID_PADDING * 2 - GRID_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
+  const cardWidth = (windowWidth - GRID_PADDING * 2 - GRID_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
 
   // Reload plants every time the screen comes into focus
   useFocusEffect(
