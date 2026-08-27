@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
+import { useState, useCallback } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
 
 import Colors from '@/constants/colors';
 import IconButton from '@/components/IconButton';
 import SearchBar from '@/components/SearchBar';
 import BasicButton from '@/components/BasicButton';
+import PlantCard from '@/components/PlantCard';
+import { getPlants, Plant } from '@/utils/plantStorage';
 
 const FILTER_OPTIONS = [
   { label: 'All', icon: 'grid' as const },
@@ -18,6 +20,23 @@ export default function PlantsScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [plants, setPlants] = useState<Plant[]>([]);
+
+  // Reload plants every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      getPlants().then(setPlants);
+    }, [])
+  );
+
+  const filteredPlants = plants.filter((plant) => {
+    const matchesSearch = plant.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesFilter =
+      selectedFilter === 'All' || plant.types.includes(selectedFilter);
+    return matchesSearch && matchesFilter;
+  });
 
   const handleAddPlant = () => {
     router.push('/add-plant');
@@ -25,9 +44,10 @@ export default function PlantsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Add button */}
+      {/* Header */}
       <View style={styles.header}>
-        <IconButton 
+        <Text style={styles.title}>My Plants</Text>
+        <IconButton
           icon="add"
           onPress={handleAddPlant}
           size={28}
@@ -36,8 +56,8 @@ export default function PlantsScreen() {
       </View>
 
       {/* Search Bar */}
-      <SearchBar 
-        value={searchQuery} 
+      <SearchBar
+        value={searchQuery}
         onChangeText={setSearchQuery}
       />
 
@@ -61,10 +81,31 @@ export default function PlantsScreen() {
         </ScrollView>
       </View>
 
-      {/* Content area */}
-      <View style={styles.content}>
-        <Text>Plants list will go here</Text>
-      </View>
+      {/* Plants grid */}
+      {filteredPlants.length === 0 ? (
+        <View style={styles.content}>
+          <Text style={styles.emptyText}>No plants found</Text>
+          <Text style={styles.emptySubtext}>
+            Tap "Add Plants" to add your first plant
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredPlants}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.gridContent}
+          renderItem={({ item }) => (
+            <PlantCard
+              imageUri={item.imageUri}
+              name={item.name}
+              location={item.location}
+              types={item.types}
+            />
+          )}
+        />
+      )}
     </View>
   );
 }
@@ -79,7 +120,15 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     marginBottom: 12,
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.navGreen,
   },
 
   filtersWrapper: {
@@ -102,5 +151,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.navGreen,
+  },
+
+  emptySubtext: {
+    fontSize: 12,
+    color: Colors.navGreen,
+    marginTop: 4,
+  },
+
+  gridContent: {
+    padding: 16,
+    gap: 12,
+  },
+
+  row: {
+    gap: 12,
   },
 });

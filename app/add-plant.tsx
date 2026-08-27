@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, Alert } from 'react-native';
 import { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Colors from '@/constants/colors';
 import IconButton from '@/components/IconButton';
@@ -9,6 +8,7 @@ import PhotoField from '@/components/PhotoField';
 import TextField from '@/components/TextField';
 import BasicButton from '@/components/BasicButton';
 import Dropdown from '@/components/Dropdown';
+import { savePlant } from '@/utils/plantStorage';
 
 const PLANT_TYPES = [
   { label: 'Herb', icon: 'leaf' as const },
@@ -91,9 +91,32 @@ export default function AddPlantScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSavePlant = () => {
-    if (!validate()) return;
-    // TODO: implement saving
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSavePlant = async () => {
+    if (!validate() || !imageUri) return;
+
+    setIsSaving(true);
+    try {
+      await savePlant({
+        imageUri,
+        name: name.trim(),
+        types: selectedTypes,
+        location,
+        wateringFrequency,
+        sunlight,
+        notes,
+      });
+
+      Alert.alert('Success', `${name.trim()} has been saved!`, [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      console.error('Failed to save plant:', error);
+      Alert.alert('Error', 'Something went wrong while saving. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -211,8 +234,14 @@ export default function AddPlantScreen() {
           />
 
           {/* Save Plant button */}
-          <Pressable style={styles.saveButton} onPress={handleSavePlant}>
-            <Text style={styles.saveButtonText}>Save Plant</Text>
+          <Pressable
+            style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
+            onPress={handleSavePlant}
+            disabled={isSaving}
+          >
+            <Text style={styles.saveButtonText}>
+              {isSaving ? 'Saving...' : 'Save Plant'}
+            </Text>
           </Pressable>
         </ScrollView>
       </View>
@@ -281,6 +310,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 32,
     alignItems: 'center',
+  },
+  saveButtonDisabled: {
+    opacity: 0.6,
   },
   saveButtonText: {
     color: Colors.navYellow,
