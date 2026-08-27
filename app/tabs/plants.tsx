@@ -110,6 +110,7 @@ export default function PlantsScreen() {
               location={item.location}
               types={item.types}
               style={{ width: cardWidth }}
+              onPress={() => router.push(`/edit-plant?id=${item.id}`)}
             />
           )}
         />

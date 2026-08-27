@@ -39,3 +39,24 @@ export async function savePlant(
 
   return newPlant;
 }
+
+export async function getPlantById(id: string): Promise<Plant | undefined> {
+  const plants = await getPlants();
+  return plants.find((plant) => plant.id === id);
+}
+
+export async function updatePlant(updatedPlant: Plant): Promise<void> {
+  const plants = await getPlants();
+  const index = plants.findIndex((plant) => plant.id === updatedPlant.id);
+
+  if (index !== -1) {
+    plants[index] = updatedPlant;
+    await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(plants));
+  }
+}
+
+export async function deletePlant(id: string): Promise<void> {
+  const plants = await getPlants();
+  const filtered = plants.filter((plant) => plant.id !== id);
+  await AsyncStorage.setItem(PLANTS_KEY, JSON.stringify(filtered));
+}

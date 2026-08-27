@@ -6,10 +6,9 @@ import {
   Pressable,
   Alert,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { useState } from 'react';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 
 import Colors from '@/constants/colors';
 import Fonts from '@/constants/fonts';
@@ -18,7 +17,12 @@ import PhotoField from '@/components/PhotoField';
 import TextField from '@/components/TextField';
 import BasicButton from '@/components/BasicButton';
 import Dropdown from '@/components/Dropdown';
-import { savePlant } from '@/utils/plantStorage';
+import {
+  getPlantById,
+  updatePlant,
+  deletePlant,
+  Plant,
+} from '@/utils/plantStorage';
 
 const PLANT_TYPES = [
   { label: 'Herb', icon: 'leaf' as const },
@@ -46,8 +50,13 @@ const SUNLIGHT_OPTIONS = [
   'Full shade',
 ];
 
-export default function AddPlantScreen() {
+export default function EditPlantScreen() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  // Original plant loaded from storage
+  const [plant, setPlant] = useState<Plant | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Category 1
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
@@ -74,6 +83,40 @@ export default function AddPlantScreen() {
     sunlight?: string;
   }>({});
 
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Load the plant once when the screen opens
+  if (isLoading && id) {
+    setIsLoading(false);
+    getPlantById(id).then((found) => {
+      if (found) {
+        setPlant(found);
+        setImageUri(found.imageUri);
+        setName(found.name);
+        setSelectedTypes(found.types);
+        setLocation(found.location);
+        setWateringFrequency(found.wateringFrequency);
+        setSunlight(found.sunlight);
+        setNotes(found.notes);
+      } else {
+        Alert.alert('Not found', 'This plant no longer exists.', [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      }
+    });
+  }
+
+  // Track whether the user changed anything compared to the loaded plant
+  const isDirty =
+    plant !== null &&
+    (imageUri !== plant.imageUri ||
+      name !== plant.name ||
+      JSON.stringify(selectedTypes) !== JSON.stringify(plant.types) ||
+      location !== plant.location ||
+      wateringFrequency !== plant.wateringFrequency ||
+      sunlight !== plant.sunlight ||
+      notes !== plant.notes);
+
   const handleSelectImage = (uri: string) => {
     setImageUri(uri);
     setErrors((prev) => ({ ...prev, photo: undefined }));
@@ -83,7 +126,6 @@ export default function AddPlantScreen() {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
-    // Clear error as soon as at least one type is selected
     if (!selectedTypes.includes(type)) {
       setErrors((prev) => ({ ...prev, types: undefined }));
     }
@@ -101,14 +143,24 @@ export default function AddPlantScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const [isSaving, setIsSaving] = useState(false);
+  const handleGoBack = () => {
+    if (isDirty) {
+      Alert.alert('Discard changes?', 'You have unsaved changes.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Discard', style: 'destructive', onPress: () => router.back() },
+      ]);
+    } else {
+      router.back();
+    }
+  };
 
-  const handleSavePlant = async () => {
-    if (!validate() || !imageUri) return;
+  const handleSaveChanges = async () => {
+    if (!plant || !validate() || !imageUri) return;
 
     setIsSaving(true);
     try {
-      await savePlant({
+      await updatePlant({
+        ...plant,
         imageUri,
         name: name.trim(),
         types: selectedTypes,
@@ -118,35 +170,69 @@ export default function AddPlantScreen() {
         notes,
       });
 
-      Alert.alert('Success', `${name.trim()} has been saved!`, [
+      Alert.alert('Success', `${name.trim()} has been updated!`, [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error) {
-      console.error('Failed to save plant:', error);
+      console.error('Failed to update plant:', error);
       Alert.alert('Error', 'Something went wrong while saving. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
 
+  const handleDeletePlant = () => {
+    if (!plant) return;
+
+    Alert.alert(
+      `Delete ${plant.name}?`,
+      'This will permanently remove this plant and its watering information.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deletePlant(plant.id);
+              router.back();
+            } catch (error) {
+              console.error('Failed to delete plant:', error);
+              Alert.alert('Error', 'Something went wrong while deleting. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
       {/* Edge-to-edge disables Android's adjustResize, so padding is needed on both platforms */}
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior="padding"
-      >
-        {/* Header: back + centered title (spacer balances the back button) */}
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        {/* Header: back, title, save */}
         <View style={styles.header}>
           <IconButton
             icon="arrow-back"
-            onPress={() => router.back()}
+            onPress={handleGoBack}
             size={28}
             color={Colors.navGreen}
           />
-          <Text style={styles.headerTitle}>Add Plant</Text>
-          <View style={styles.headerSpacer} />
+          <Text style={styles.headerTitle}>Edit Plant</Text>
+          <Pressable
+            onPress={handleSaveChanges}
+            disabled={!isDirty || isSaving || isLoading}
+          >
+            <Text
+              style={[
+                styles.headerSave,
+                (!isDirty || isSaving || isLoading) && styles.headerSaveDisabled,
+              ]}
+            >
+              {isSaving ? 'Saving...' : 'Save'}
+            </Text>
+          </Pressable>
         </View>
 
         <ScrollView
@@ -197,9 +283,7 @@ export default function AddPlantScreen() {
               </View>
             ))}
           </View>
-          {errors.types && (
-            <Text style={styles.errorText}>{errors.types}</Text>
-          )}
+          {errors.types && <Text style={styles.errorText}>{errors.types}</Text>}
 
           {/* Category 3: Care */}
           <Text style={styles.sectionTitle}>Care</Text>
@@ -250,15 +334,10 @@ export default function AddPlantScreen() {
             numberOfLines={4}
           />
 
-          {/* Save Plant button */}
-          <Pressable
-            style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
-            onPress={handleSavePlant}
-            disabled={isSaving}
-          >
-            <Text style={styles.saveButtonText}>
-              {isSaving ? 'Saving...' : 'Save Plant'}
-            </Text>
+          {/* Delete Plant — separate destructive action at the bottom */}
+          <View style={styles.deleteDivider} />
+          <Pressable style={styles.deleteButton} onPress={handleDeletePlant}>
+            <Text style={styles.deleteButtonText}>Delete Plant</Text>
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -284,8 +363,14 @@ const styles = StyleSheet.create({
     color: Colors.navGreen,
     fontFamily: Fonts.body,
   },
-  headerSpacer: {
-    width: 44,
+  headerSave: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.navGreen,
+    fontFamily: Fonts.body,
+  },
+  headerSaveDisabled: {
+    opacity: 0.4,
   },
   scroll: {
     flex: 1,
@@ -332,20 +417,25 @@ const styles = StyleSheet.create({
     height: 38,
     justifyContent: 'center',
   },
-  saveButton: {
-    backgroundColor: Colors.navGreen,
-    borderRadius: 8,
-    paddingVertical: 14,
+  deleteDivider: {
+    height: 1,
+    backgroundColor: Colors.errorRed,
+    opacity: 0.3,
     marginHorizontal: 16,
-    marginTop: 24,
+    marginTop: 12,
+  },
+  deleteButton: {
+    marginHorizontal: 16,
+    marginTop: 16,
     marginBottom: 32,
+    paddingVertical: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.errorRed,
     alignItems: 'center',
   },
-  saveButtonDisabled: {
-    opacity: 0.6,
-  },
-  saveButtonText: {
-    color: Colors.navYellow,
+  deleteButtonText: {
+    color: Colors.errorRed,
     fontSize: 16,
     fontWeight: '700',
     fontFamily: Fonts.body,
