@@ -108,9 +108,9 @@ export default function SettingsScreen() {
         <Pressable style={styles.modalBackdrop} onPress={() => setIsAboutVisible(false)}>
           <Pressable style={styles.modalContent} onPress={() => {}}>
             <Image source={MARIGOLD_ICON} style={styles.aboutIcon} resizeMode="contain" />
-            <Text style={styles.aboutTitle}>About</Text>
+            <Text style={styles.aboutTitle}>About Marigold</Text>
             <Text style={styles.aboutDescription}>
-              A simple app to help you keep track of your plants and their care
+              Marigold is a plant care app that help you keep track of your plants and their care
               schedules.
             </Text>
             <Text style={styles.aboutVersion}>Version 1.0.0</Text>

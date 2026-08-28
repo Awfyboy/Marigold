@@ -1,6 +1,6 @@
 # Marigold - Plant Care App
 
-<img src="assets/marigold-icon-bg.png" alt="drawing" width="320"/>
+<img src="assets/marigold-icon-bg.png" alt="marigold" width="320"/>
 
 Marigold is a Expo Go mobile application designed to help users
 manage and care for their houseplants. Users can add plants, store information about them, track watering and
@@ -18,10 +18,11 @@ Make sure the following are installed:
 * Expo Go on an Android or iOS device
 * Git
 
-You can check if Node.js is installed by running:
+You can check if Node.js and NPM is installed by running:
 
 ```bash
-npm -version
+node -v
+npm -v
 ```
 
 ### 1. Clone the repository
@@ -49,9 +50,9 @@ npx expo start
 
 After the development server starts:
 
-* **Android:** Open Expo Go and scan the QR code displayed in the terminal or browser.
-* **iOS:** Open the Camera app and scan the QR code, then open the project in Expo Go.
-* **Web:** Press `w` in the terminal or run:
+- **Android:** Open Expo Go and scan the QR code displayed in the terminal or browser.
+- **iOS:** Open the Camera app and scan the QR code, then open the project in Expo Go.
+- **Web:** Press `w` in the terminal or run:
 
 ```bash
 npx expo start --web
@@ -63,7 +64,10 @@ This application was developed using **Expo SDK 54**, as that is the version sup
 
 ---
 
-# Features
+## Features
+
+- **Home Dashboard** – Provides an overview of the user's plants and upcoming care activities.
+<img src="screenshots/home2.jpg" alt="screen" width="500"/>
 
 ---
 
@@ -102,7 +106,7 @@ Additional screens are accessed through the stack navigation:
 
 ---
 
-# Known Issues & Future Improvements
+## Known Issues & Future Improvements
 
 - Allow a custom time to be set for watering and fertilizing
 - Cropping feature limited, can be obfuscated due to Android UI
@@ -115,6 +119,6 @@ Additional screens are accessed through the stack navigation:
 ---
 
 ## Student Info
-Awf Ibrahim Mohamed (SID: 24047957)
-Bachelors (Hons) Computer Science
-Module Name: Mobile Applications
+- Awf Ibrahim Mohamed (SID: 24047957)
+- Bachelors (Hons) Computer Science
+- Module Name: Mobile Applications
