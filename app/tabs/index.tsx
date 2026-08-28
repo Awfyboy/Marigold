@@ -73,16 +73,14 @@ export default function Index() {
       (a, b) => getNextFertilizingDate(a).getTime() - getNextFertilizingDate(b).getTime()
     );
 
-  // Combined overdue/due-today counts for the greeting (watering or fertilizing)
-  const overdueCount = plants.filter(
-    (plant) => getDaysOverdue(plant) > 0 || getFertilizingDaysOverdue(plant) > 0
-  ).length;
-  const dueTodayCount = plants.filter(
-    (plant) =>
-      (getNextWateringDate(plant).getTime() <= today.getTime() + 86400000 - 1 ||
-        getNextFertilizingDate(plant).getTime() <= today.getTime() + 86400000 - 1) &&
-      getDaysOverdue(plant) <= 0 &&
-      getFertilizingDaysOverdue(plant) <= 0
+  // Watering card counts: overdue vs strictly due today
+  const waterOverdueCount = plants.filter((plant) => getDaysOverdue(plant) > 0).length;
+  const waterDueTodayCount = dueToday.filter((plant) => getDaysOverdue(plant) <= 0).length;
+
+  // Fertilizing card counts: overdue vs strictly due today
+  const fertOverdueCount = plants.filter((plant) => getFertilizingDaysOverdue(plant) > 0).length;
+  const fertDueTodayCount = dueTodayFertilizing.filter(
+    (plant) => getFertilizingDaysOverdue(plant) <= 0
   ).length;
 
   // Combined today's tasks (watering and/or fertilizing due today or overdue)
@@ -215,17 +213,7 @@ export default function Index() {
           {getGreeting()} <Text style={styles.greetingEmoji}>🌱</Text>
         </Text>
         <Text style={styles.greetingSubtitle}>
-          {overdueCount > 0 && (
-            <Text style={styles.greetingHighlight}>
-              {overdueCount} plant{overdueCount > 1 ? 's are' : ' is'} overdue!
-              {dueTodayCount > 0 ? '\n' : ''}
-            </Text>
-          )}
-          {dueTodayCount > 0
-            ? `You have ${dueTodayCount} plant${dueTodayCount > 1 ? 's' : ''} due today.`
-            : overdueCount === 0
-              ? 'All your plants are happy today!'
-              : ''}
+          You have {plants.length} plant{plants.length > 1 ? 's' : ''} in your garden.
         </Text>
 
         {/* Water today card */}
@@ -237,9 +225,17 @@ export default function Index() {
                 Water today{dueToday.length > 0 ? ` — ${dueToday.length}` : ''}
               </Text>
               <Text style={styles.waterCardSubtitle}>
-                {dueToday.length > 0
-                  ? `${dueToday.length} plant${dueToday.length > 1 ? 's' : ''} need${dueToday.length > 1 ? '' : 's'} watering`
-                  : 'Nothing to water right now'}
+                {waterOverdueCount > 0 && (
+                  <Text style={styles.overdueCountText}>
+                    {waterOverdueCount} plant{waterOverdueCount > 1 ? 's are' : ' is'} overdue!
+                    {'\n'}
+                  </Text>
+                )}
+                {waterDueTodayCount > 0
+                  ? `${waterDueTodayCount} plant${waterDueTodayCount > 1 ? 's' : ''} due today.`
+                  : waterOverdueCount === 0
+                    ? 'Nothing to water right now'
+                    : ''}
               </Text>
             </View>
           </View>
@@ -254,9 +250,17 @@ export default function Index() {
                 Fertilize today{dueTodayFertilizing.length > 0 ? ` — ${dueTodayFertilizing.length}` : ''}
               </Text>
               <Text style={styles.waterCardSubtitle}>
-                {dueTodayFertilizing.length > 0
-                  ? `${dueTodayFertilizing.length} plant${dueTodayFertilizing.length > 1 ? 's' : ''} need${dueTodayFertilizing.length > 1 ? '' : 's'} fertilizing`
-                  : 'Nothing to fertilize right now'}
+                {fertOverdueCount > 0 && (
+                  <Text style={styles.overdueCountText}>
+                    {fertOverdueCount} plant{fertOverdueCount > 1 ? 's are' : ' is'} overdue!
+                    {'\n'}
+                  </Text>
+                )}
+                {fertDueTodayCount > 0
+                  ? `${fertDueTodayCount} plant${fertDueTodayCount > 1 ? 's' : ''} due today.`
+                  : fertOverdueCount === 0
+                    ? 'Nothing to fertilize right now'
+                    : ''}
               </Text>
             </View>
           </View>
@@ -311,32 +315,21 @@ export default function Index() {
         {upcoming.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Upcoming</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.upcomingList}
-            >
-              {upcoming.map((task) => {
-                const overdueDays =
-                  task.action === 'Water'
-                    ? getDaysOverdue(task.plant)
-                    : getFertilizingDaysOverdue(task.plant);
-                return (
-                  <PlantListCard
-                    key={`${task.plant.id}-${task.action}`}
-                    plant={task.plant}
-                    action={task.action}
-                    dueDate={task.dueDate}
-                    overdueDays={overdueDays}
-                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
-                    style={styles.upcomingCard}
-                  />
-                );
-              })}
-              <Pressable onPress={() => router.push('/tabs/schedule')} style={styles.seeScheduleWrap}>
+            <View style={styles.upcomingList}>
+              {upcoming.map((task) => (
+                <PlantListCard
+                  key={`${task.plant.id}-${task.action}`}
+                  plant={task.plant}
+                  action={task.action}
+                  dueDate={task.dueDate}
+                  overdueDays={0}
+                  onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                />
+              ))}
+              <Pressable onPress={() => router.push('/tabs/schedule')}>
                 <Text style={styles.seeScheduleLink}>See schedule →</Text>
               </Pressable>
-            </ScrollView>
+            </View>
           </>
         )}
 
@@ -362,8 +355,8 @@ export default function Index() {
           ))}
         </View>
 
-        {/* TEMPORARY dev helpers. Remove before release. */}
-        {/* <View style={styles.debugRow}>
+        {/* TEMPORARY dev helpers. */}
+        <View style={styles.debugRow}>
           <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
             <Text style={styles.debugButtonText}>
               DEV: Make "{plants[plants.length - 1]?.name}" due today
@@ -390,7 +383,7 @@ export default function Index() {
           <Pressable style={styles.debugButton} onPress={simulateAnotherFertilizeDue}>
             <Text style={styles.debugButtonText}>DEV: Make another plant need fertilizing today</Text>
           </Pressable>
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   );
@@ -464,7 +457,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 4,
   },
-  greetingHighlight: {
+  overdueCountText: {
     color: Colors.errorRed,
     fontWeight: '700',
   },
@@ -594,22 +587,15 @@ const styles = StyleSheet.create({
   upcomingList: {
     paddingHorizontal: 16,
     gap: 12,
-    paddingBottom: 4,
-  },
-  upcomingCard: {
-    width: 240,
-  },
-  seeScheduleWrap: {
-    justifyContent: 'center',
-    paddingHorizontal: 4,
   },
   seeScheduleLink: {
     fontSize: 13,
     color: Colors.navGreen,
     fontWeight: '600',
     fontFamily: Fonts.body,
+    marginTop: 4,
   },
-
+  
   // Your Plants preview
   seeAllLink: {
     fontSize: 13,
