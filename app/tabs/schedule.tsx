@@ -32,6 +32,7 @@ function dayKey(date: Date): string {
 }
 
 // Group header label: 'Tomorrow' for the next day, otherwise the exact date
+// (year only shown when it differs from the current year)
 function groupLabel(date: Date): string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -39,11 +40,12 @@ function groupLabel(date: Date): string {
   d.setHours(0, 0, 0, 0);
   const diffDays = Math.round((d.getTime() - today.getTime()) / 86400000);
   if (diffDays === 1) return 'Tomorrow';
+  const showYear = d.getFullYear() !== today.getFullYear();
   return d.toLocaleDateString(undefined, {
     weekday: 'short',
-    day: 'numeric',
+    day: '2-digit',
     month: 'short',
-    year: 'numeric',
+    ...(showYear ? { year: 'numeric' } : {}),
   });
 }
 
@@ -100,7 +102,7 @@ export default function ScheduleScreen() {
         <Text style={styles.title}>Schedule</Text>
 
         {todayTasks.length > 0 && (
-          <>
+          <View style={styles.todaySection}>
             <Text style={styles.sectionTitle}>Today</Text>
             <View style={styles.taskList}>
               {todayTasks.map((task) => {
@@ -115,16 +117,17 @@ export default function ScheduleScreen() {
                     action={task.action}
                     dueDate={task.dueDate}
                     overdueDays={overdueDays}
+                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
                     onDone={() => handleDone(task)}
                   />
                 );
               })}
             </View>
-          </>
+          </View>
         )}
 
         {upcomingGroups.length > 0 && (
-          <>
+          <View style={[styles.upcomingSection, todayTasks.length > 0 && styles.sectionSpaced]}>
             <Text style={styles.sectionTitle}>Upcoming</Text>
             {upcomingGroups.map((group) => (
               <View key={group.key} style={styles.upcomingGroup}>
@@ -136,14 +139,13 @@ export default function ScheduleScreen() {
                       plant={task.plant}
                       action={task.action}
                       dueDate={task.dueDate}
-                      showDueDate={false}
                       onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
                     />
                   ))}
                 </View>
               </View>
             ))}
-          </>
+          </View>
         )}
 
         {todayTasks.length === 0 && upcomingGroups.length === 0 && (
@@ -194,11 +196,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 32,
   },
+  todaySection: {
+    backgroundColor: Colors.paleGreenYellow,
+    paddingVertical: 16,
+    marginHorizontal: 12,
+    borderRadius: 12,
+  },
   taskList: {
     gap: 12,
     paddingHorizontal: 16,
   },
+  upcomingSection: {
+    paddingVertical: 16,
+    marginHorizontal: 12,
+    borderRadius: 12,
+  },
+  sectionSpaced: {
+    marginTop: 20,
+  },
   upcomingGroup: {
-    marginBottom: 8,
+    marginBottom: 20,
   },
 });

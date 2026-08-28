@@ -176,9 +176,7 @@ export default function EditPlantScreen() {
         notes,
       });
 
-      Alert.alert('Success', `${name.trim()} has been updated!`, [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      router.back();
     } catch (error) {
       console.error('Failed to update plant:', error);
       Alert.alert('Error', 'Something went wrong while saving. Please try again.');

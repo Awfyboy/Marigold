@@ -275,7 +275,7 @@ export default function Index() {
 
         {/* Today's Tasks (watering + fertilizing combined) */}
         {todayTasks.length > 0 && (
-          <>
+          <View style={styles.todaySection}>
             <Text style={styles.sectionTitle}>Today's Tasks</Text>
             <View style={styles.taskList}>
               {todayTasks.map((task) => {
@@ -284,43 +284,23 @@ export default function Index() {
                     ? getDaysOverdue(task.plant)
                     : getFertilizingDaysOverdue(task.plant);
                 return (
-                  <View key={`${task.plant.id}-${task.action}`} style={styles.taskCard}>
-                    <Image source={{ uri: task.plant.imageUri }} style={styles.taskImage} />
-                    <View style={styles.taskInfo}>
-                      <Text style={styles.taskName} numberOfLines={1}>
-                        {task.plant.name}
-                      </Text>
-                      <View style={styles.taskMetaRow}>
-                        <Ionicons
-                          name={task.action === 'Water' ? 'water' : 'leaf'}
-                          size={12}
-                          color={Colors.navGreen}
-                        />
-                        <Text style={styles.taskAction}>{task.action}</Text>
-                        {overdueDays > 0 && (
-                          <View style={styles.overdueBadge}>
-                            <Ionicons name="warning" size={11} color="#ffffff" />
-                            <Text style={styles.overdueBadgeText}>{overdueDays}d overdue</Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    <Pressable
-                      style={styles.doneButton}
-                      onPress={() =>
-                        task.action === 'Water'
-                          ? handleMarkWatered(task.plant)
-                          : handleMarkFertilized(task.plant)
-                      }
-                    >
-                      <Ionicons name="checkmark" size={16} color={Colors.navYellow} />
-                      <Text style={styles.doneButtonText}>Done</Text>
-                    </Pressable>
-                  </View>
+                  <PlantListCard
+                    key={`${task.plant.id}-${task.action}`}
+                    plant={task.plant}
+                    action={task.action}
+                    dueDate={task.dueDate}
+                    overdueDays={overdueDays}
+                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                    onDone={() =>
+                      task.action === 'Water'
+                        ? handleMarkWatered(task.plant)
+                        : handleMarkFertilized(task.plant)
+                    }
+                  />
                 );
               })}
             </View>
-          </>
+          </View>
         )}
 
         {/* Upcoming */}
@@ -519,7 +499,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 24,
+    marginTop: 8,
     marginBottom: 8,
   },
 
@@ -528,71 +508,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 16,
   },
-  taskCard: {
-    backgroundColor: Colors.bgYellow,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.navGreen,
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  taskImage: {
-    width: 44,
-    height: 44,
-    borderRadius: 6,
-    backgroundColor: Colors.bgYellow,
-  },
-  taskInfo: {
-    flex: 1,
-  },
-  taskName: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.navGreen,
-    fontFamily: Fonts.title,
-  },
-  taskMetaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginTop: 2,
-  },
-  taskAction: {
-    fontSize: 12,
-    color: '#000',
-    fontFamily: Fonts.body,
-  },
-  overdueBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    backgroundColor: Colors.errorRed,
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-  },
-  overdueBadgeText: {
-    color: '#ffffff',
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: Fonts.body,
-  },
-  doneButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: Colors.navGreen,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  doneButtonText: {
-    color: Colors.navYellow,
-    fontSize: 13,
-    fontWeight: '700',
-    fontFamily: Fonts.body,
+  todaySection: {
+    backgroundColor: Colors.paleGreenYellow,
+    paddingVertical: 16,
+    marginHorizontal: 12,
+    marginTop: 20,
+    borderRadius: 12,
   },
 
   // Upcoming

@@ -7,6 +7,7 @@ const Colors = {
     cancelRed: '#a13232',
     waterBlue: '#4165db',
     fertileGreen: '#3eb62f',
+    paleGreenYellow: '#f6fae7',
 }
 
 export default Colors

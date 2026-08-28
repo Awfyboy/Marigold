@@ -33,30 +33,33 @@ export default function PlantListCard({
       {/* Left: image */}
       <Image source={{ uri: plant.imageUri }} style={styles.image} />
 
-      {/* Center: name */}
+      {/* Center: name + (optional) due date / overdue badge */}
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1}>
           {plant.name}
         </Text>
+        {showDueDate && (
+          <View style={styles.metaRow}>
+            {overdueDays > 0 ? (
+              <View style={styles.overdueBadge}>
+                <Ionicons name="warning" size={10} color="#ffffff" />
+                <Text style={styles.overdueBadgeText}>{overdueDays}d overdue</Text>
+              </View>
+            ) : (
+              <Text style={styles.dueText} numberOfLines={1}>
+                {formatDueDate(dueDate)}
+              </Text>
+            )}
+          </View>
+        )}
       </View>
 
-      {/* Right: task pill + optional due date / done button */}
-      <View style={styles.task}>
+      {/* Right: task tag pill + optional done button, on one row */}
+      <View style={styles.right}>
         <View style={[styles.actionPill, { backgroundColor: isWater ? Colors.waterBlue : Colors.fertileGreen }]}>
           <Ionicons name={actionIcon} size={12} color="#ffffff" />
           <Text style={styles.actionPillText}>{action}</Text>
         </View>
-        {showDueDate && (
-          <Text style={[styles.dueText, overdueDays > 0 && styles.dueOverdue]} numberOfLines={1}>
-            {formatDueDate(dueDate)}
-          </Text>
-        )}
-        {showDueDate && overdueDays > 0 && (
-          <View style={styles.overdueBadge}>
-            <Ionicons name="warning" size={10} color="#ffffff" />
-            <Text style={styles.overdueBadgeText}>{overdueDays}d overdue</Text>
-          </View>
-        )}
         {onDone && (
           <Pressable style={styles.doneButton} onPress={onDone}>
             <Ionicons name="checkmark" size={14} color={Colors.navYellow} />
@@ -86,6 +89,12 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     paddingHorizontal: 10,
+    gap: 3,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   name: {
     fontSize: 15,
@@ -93,12 +102,11 @@ const styles = StyleSheet.create({
     color: Colors.navGreen,
     fontFamily: Fonts.title,
   },
-  task: {
-    alignItems: 'flex-end',
-    paddingVertical: 8,
+  right: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     paddingRight: 10,
-    paddingLeft: 6,
-    gap: 3,
   },
   actionPill: {
     flexDirection: 'row',
@@ -118,10 +126,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.navGreen,
     fontFamily: Fonts.body,
-  },
-  dueOverdue: {
-    color: Colors.errorRed,
-    fontWeight: '700',
   },
   overdueBadge: {
     flexDirection: 'row',

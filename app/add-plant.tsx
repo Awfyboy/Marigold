@@ -121,9 +121,7 @@ export default function AddPlantScreen() {
         notes,
       });
 
-      Alert.alert('Success', `${name.trim()} has been saved!`, [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      router.back();
     } catch (error) {
       console.error('Failed to save plant:', error);
       Alert.alert('Error', 'Something went wrong while saving. Please try again.');
