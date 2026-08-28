@@ -348,7 +348,7 @@ export default function Index() {
         </View>
 
         {/* TEMPORARY dev helpers. */}
-        <View style={styles.debugRow}>
+        {/* <View style={styles.debugRow}>
           <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
             <Text style={styles.debugButtonText}>
               DEV: Make "{plants[plants.length - 1]?.name}" due today
@@ -375,7 +375,7 @@ export default function Index() {
           <Pressable style={styles.debugButton} onPress={simulateAnotherFertilizeDue}>
             <Text style={styles.debugButtonText}>DEV: Make another plant need fertilizing today</Text>
           </Pressable>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
