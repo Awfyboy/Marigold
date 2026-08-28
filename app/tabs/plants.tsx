@@ -15,7 +15,15 @@ const FILTER_OPTIONS = [
   { label: 'Herb', icon: 'leaf' as const },
   { label: 'Flower', icon: 'flower' as const },
   { label: 'Fruit', icon: 'nutrition' as const },
+  { label: 'Indoor', icon: 'home' as const },
+  { label: 'Outdoor', icon: 'sunny' as const },
 ];
+
+// Filter labels that match against a plant's location instead of its types
+const LOCATION_FILTERS: Record<string, string> = {
+  Indoor: 'Indoors',
+  Outdoor: 'Outdoors',
+};
 
 const NUM_COLUMNS = 2;
 const GRID_GAP = 12;
@@ -43,7 +51,9 @@ export default function PlantsScreen() {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesFilter =
-      selectedFilter === 'All' || plant.types.includes(selectedFilter);
+      selectedFilter === 'All' ||
+      plant.types.includes(selectedFilter) ||
+      plant.location === LOCATION_FILTERS[selectedFilter];
     return matchesSearch && matchesFilter;
   });
 
@@ -102,6 +112,7 @@ export default function PlantsScreen() {
           numColumns={NUM_COLUMNS}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.gridContent}
+          style={styles.grid}
           renderItem={({ item }) => (
             <PlantCard
               imageUri={item.imageUri}
@@ -142,6 +153,9 @@ const styles = StyleSheet.create({
   filtersWrapper: {
     alignItems: 'center',
     marginTop: 8,
+    backgroundColor: Colors.bgYellow,
+    paddingBottom: 4,
+    zIndex: 1,
   },
 
   filtersContainer: {
@@ -175,8 +189,13 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.body,
   },
 
+  grid: {
+    marginTop: -12,
+  },
+
   gridContent: {
     padding: GRID_PADDING,
+    paddingTop: GRID_PADDING + 12,
     gap: GRID_GAP,
   },
 

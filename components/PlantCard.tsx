@@ -18,6 +18,11 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
+const LOCATION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  Indoors: 'home',
+  Outdoors: 'sunny',
+};
+
 export default function PlantCard({ imageUri, name, location, types, onPress, style }: Props) {
   return (
     <Pressable style={[styles.card, style]} onPress={onPress}>
@@ -31,7 +36,11 @@ export default function PlantCard({ imageUri, name, location, types, onPress, st
         </Text>
 
         <View style={styles.metaRow}>
-          <Ionicons name="location" size={14} color={Colors.navGreen} />
+          <Ionicons
+            name={LOCATION_ICONS[location] || 'location'}
+            size={14}
+            color={Colors.navGreen}
+          />
           <Text style={styles.metaText} numberOfLines={1}>
             {location}
           </Text>
