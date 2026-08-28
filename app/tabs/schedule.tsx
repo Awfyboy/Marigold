@@ -117,7 +117,7 @@ export default function ScheduleScreen() {
                     action={task.action}
                     dueDate={task.dueDate}
                     overdueDays={overdueDays}
-                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                    onPress={() => router.push(`/view-plant?id=${task.plant.id}`)}
                     onDone={() => handleDone(task)}
                   />
                 );
@@ -139,7 +139,7 @@ export default function ScheduleScreen() {
                       plant={task.plant}
                       action={task.action}
                       dueDate={task.dueDate}
-                      onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                      onPress={() => router.push(`/view-plant?id=${task.plant.id}`)}
                     />
                   ))}
                 </View>

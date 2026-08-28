@@ -168,3 +168,11 @@ export function formatDueDate(date: Date): string {
   const months = Math.floor(diffDays / 30);
   return `In ${months} month${months > 1 ? 's' : ''}`;
 }
+
+// Full calendar date for the Care section, e.g. "August 27"
+export function formatFullDate(date: string | Date): string {
+  return new Date(date).toLocaleDateString(undefined, {
+    month: 'long',
+    day: 'numeric',
+  });
+}

@@ -290,7 +290,7 @@ export default function Index() {
                     action={task.action}
                     dueDate={task.dueDate}
                     overdueDays={overdueDays}
-                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                    onPress={() => router.push(`/view-plant?id=${task.plant.id}`)}
                     onDone={() =>
                       task.action === 'Water'
                         ? handleMarkWatered(task.plant)
@@ -315,7 +315,7 @@ export default function Index() {
                   action={task.action}
                   dueDate={task.dueDate}
                   overdueDays={0}
-                  onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                  onPress={() => router.push(`/view-plant?id=${task.plant.id}`)}
                 />
               ))}
               <Pressable onPress={() => router.push('/tabs/schedule')}>
@@ -337,7 +337,7 @@ export default function Index() {
             <Pressable
               key={plant.id}
               style={[styles.previewCard, { width: previewCardWidth }]}
-              onPress={() => router.push(`/edit-plant?id=${plant.id}`)}
+              onPress={() => router.push(`/view-plant?id=${plant.id}`)}
             >
               <Image source={{ uri: plant.imageUri }} style={styles.previewImage} />
               <Text style={styles.previewName} numberOfLines={1}>
