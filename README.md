@@ -8,6 +8,86 @@ fertilizing, and view upcoming care tasks through a schedule.
 
 ---
 
+## Installation & Run Instructions
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* [Node.js](https://nodejs.org/) (Install the LTS version)
+* Expo Go on an Android or iOS device
+* Git
+
+You can check if Node.js is installed by running:
+
+```bash
+npm -version
+```
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Awfyboy/Marigold.git
+cd marigold
+
+# OR you can download the ZIP version (Click the 'Code' dropdown and 'Download ZIP')
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the Expo development server
+
+```bash
+npx expo start
+```
+
+### 4. Run the application
+
+After the development server starts:
+
+* **Android:** Open Expo Go and scan the QR code displayed in the terminal or browser.
+* **iOS:** Open the Camera app and scan the QR code, then open the project in Expo Go.
+* **Web:** Press `w` in the terminal or run:
+
+```bash
+npx expo start --web
+```
+
+### Notes
+
+This application was developed using **Expo SDK 54**, as that is the version supported by the official apps on Google Play Store and App Store. The project dependencies are defined in `package.json` and will be installed automatically when running `npm install`.
+
+---
+
+# Features
+
+---
+
+## Navigation
+
+The application uses **Expo Router** for navigation. A stack-based
+navigation structure is used to manage the different screens of the
+application.
+
+The main application screens are contained within a tab navigator:
+
+- **Home** - Displays an overview of the user's plants and care information.
+- **Plants** - Displays the user's saved plants.
+- **Schedule** - Displays upcoming watering or fertilizing tasks.
+- **Settings** - Provides simple data management and about section.
+
+Additional screens are accessed through the stack navigation:
+
+- **Add Plant** - Allows the user to add a new plant.
+- **View Plant** - Displays detailed information about a selected plant.
+- **Edit Plant** - Allows the user to modify an existing plant.
+
+---
+
 ## Technologies Used
 
 - **React Native 0.81.5** - Framework for building the mobile application.
@@ -19,3 +99,22 @@ fertilizing, and view upcoming care tasks through a schedule.
 - **Expo Image Picker** - Allows users to select images from their device.
 - **Expo Font** - Handles custom fonts used by the application.
 - **Expo Vector Icons** - Provides icons used throughout the interface.
+
+---
+
+# Known Issues & Future Improvements
+
+- Allow a custom time to be set for watering and fertilizing
+- Cropping feature limited, can be obfuscated due to Android UI
+- Allow multiple filters to be selected in Search
+- Add more plant types
+- Add local notifications
+- Add dark mode
+- Add more actions other than watering and fertilizing
+
+---
+
+## Student Info
+Awf Ibrahim Mohamed (SID: 24047957)
+Bachelors (Hons) Computer Science
+Module Name: Mobile Applications

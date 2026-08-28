@@ -68,6 +68,7 @@ export default function PlantsScreen() {
         <Text style={styles.title}>My Plants</Text>
         <IconButton
           icon="add"
+          label="Add"
           onPress={handleAddPlant}
           size={28}
           color={Colors.navGreen}
