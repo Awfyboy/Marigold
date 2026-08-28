@@ -70,24 +70,24 @@ npx expo start --web
 
 ## Features
 
-- **Home Dashboard** – Provides an overview of the user's plants and upcoming care activities, with a quick action to finish a task due today.
+- **Home Dashboard** - Provides an overview of the user's plants and upcoming care activities, with a quick action to finish a task due today.
 <img src="screenshots/home2.jpg" alt="home" width="200"/>
 
-- **Plant Collection** – View all saved plants in one place, with search and filtering options.
+- **Plant Collection** - View all saved plants in one place, with search and filtering options.
 <img src="screenshots/plants1.jpg" alt="plants" width="200"/>
 
-- **Add Plants** – Add a new plant with details such as name, type, watering frequency, etc. Take an image using the camera or select a picture from the album.
+- **Add Plants** - Add a new plant with details such as name, type, watering frequency, etc. Take an image using the camera or select a picture from the album.
 <img src="screenshots/add1.jpg" alt="add" width="200"/>
 <img src="screenshots/add2.jpg" alt="add2" width="200"/>
 
-- **Plant Details** – View detailed information about an individual plant, including its care requirements and watering information. Allow user to water or fertilize a plant earlier than their set date.
+- **Plant Details** - View detailed information about an individual plant, including its care requirements and watering information. Allow user to water or fertilize a plant earlier than their set date.
 <img src="screenshots/view1.jpg" alt="view" width="200"/>
 
-- **Edit Plants** – Update the details of an existing plant or delete them from your collection.
+- **Edit Plants** - Update the details of an existing plant or delete them from your collection.
 <img src="screenshots/edit1.jpg" alt="edit" width="200"/>
 <img src="screenshots/edit2.jpg" alt="edit2" width="200"/>
 
-- **Settings** – Allow user to delete all data, or view the about section.
+- **Settings** - Allow user to delete all data, or view the about section.
 <img src="screenshots/settings.jpg" alt="settings" width="200"/>
 
 ---
