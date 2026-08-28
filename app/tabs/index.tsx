@@ -291,6 +291,11 @@ export default function Index() {
                         {task.plant.name}
                       </Text>
                       <View style={styles.taskMetaRow}>
+                        <Ionicons
+                          name={task.action === 'Water' ? 'water' : 'leaf'}
+                          size={12}
+                          color={Colors.navGreen}
+                        />
                         <Text style={styles.taskAction}>{task.action}</Text>
                         {overdueDays > 0 && (
                           <View style={styles.overdueBadge}>
