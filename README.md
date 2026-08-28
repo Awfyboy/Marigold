@@ -64,31 +64,31 @@ npx expo start --web
 
 - You can test the application using DEV buttons. Go to 'index.tsx' and find Line 350. You will find commented DEV code. Once you uncomment it, saving the changes should show some DEV buttons below the Home screen. Use these to quickly test schedule changes of plants.
 <img src="screenshots/code1.png" alt="screen" width="200"/>
-<img src="screenshots/code2.jpg" alt="screen" width="200"/>
+<img src="screenshots/code2.jpg" alt="screen" width="200" border="1"/>
 
 ---
 
 ## Features
 
 - **Home Dashboard** – Provides an overview of the user's plants and upcoming care activities, with a quick action to finish a task due today.
-<img src="screenshots/home2.jpg" alt="home" width="200"/>
+<img src="screenshots/home2.jpg" alt="home" width="200" border="1"/>
 
 - **Plant Collection** – View all saved plants in one place, with search and filtering options.
-<img src="screenshots/plants1.jpg" alt="plants" width="200"/>
+<img src="screenshots/plants1.jpg" alt="plants" width="200" border="1"/>
 
 - **Add Plants** – Add a new plant with details such as name, type, watering frequency, etc. Take an image using the camera or select a picture from the album.
-<img src="screenshots/add1.jpg" alt="add" width="200"/>
-<img src="screenshots/add2.jpg" alt="add2" width="200"/>
+<img src="screenshots/add1.jpg" alt="add" width="200" border="1"/>
+<img src="screenshots/add2.jpg" alt="add2" width="200" border="1"/>
 
 - **Plant Details** – View detailed information about an individual plant, including its care requirements and watering information. Allow user to water or fertilize a plant earlier than their set date.
-<img src="screenshots/view1.jpg" alt="view" width="200"/>
+<img src="screenshots/view1.jpg" alt="view" width="200" border="1"/>
 
 - **Edit Plants** – Update the details of an existing plant or delete them from your collection.
-<img src="screenshots/edit1.jpg" alt="edit" width="200"/>
-<img src="screenshots/edit2.jpg" alt="edit2" width="200"/>
+<img src="screenshots/edit1.jpg" alt="edit" width="200" border="1"/>
+<img src="screenshots/edit2.jpg" alt="edit2" width="200" border="1"/>
 
 - **Settings** – Allow user to delete all data, or view the about section.
-<img src="screenshots/settings.jpg" alt="settings" width="200"/>
+<img src="screenshots/settings.jpg" alt="settings" width="200" border="1"/>
 
 ---
 
