@@ -8,6 +8,7 @@ const Colors = {
     waterBlue: '#4165db',
     fertileGreen: '#3eb62f',
     paleGreenYellow: '#f6fae7',
+    disabled: '#1563405d',
 }
 
 export default Colors

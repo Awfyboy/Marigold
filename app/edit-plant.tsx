@@ -121,6 +121,8 @@ export default function EditPlantScreen() {
       sunlight !== plant.sunlight ||
       notes !== plant.notes);
 
+  const saveDisabled = !isDirty || isSaving || isLoading;
+
   const handleSelectImage = (uri: string) => {
     setImageUri(uri);
     setErrors((prev) => ({ ...prev, photo: undefined }));
@@ -224,19 +226,16 @@ export default function EditPlantScreen() {
             color={Colors.navGreen}
           />
           <Text style={styles.headerTitle}>Edit Plant</Text>
-          <Pressable
-            onPress={handleSaveChanges}
-            disabled={!isDirty || isSaving || isLoading}
-          >
-            <Text
-              style={[
-                styles.headerSave,
-                (!isDirty || isSaving || isLoading) && styles.headerSaveDisabled,
-              ]}
-            >
-              {isSaving ? 'Saving...' : 'Save'}
-            </Text>
-          </Pressable>
+          <IconButton
+            icon="save"
+            label="Save"
+            onPress={() => {
+              if (saveDisabled) return;
+              handleSaveChanges();
+            }}
+            size={24}
+            color={saveDisabled ? Colors.disabled : Colors.navGreen}
+          />
         </View>
 
         <ScrollView
@@ -378,15 +377,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: Colors.navGreen,
     fontFamily: Fonts.body,
-  },
-  headerSave: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.navGreen,
-    fontFamily: Fonts.body,
-  },
-  headerSaveDisabled: {
-    opacity: 0.4,
   },
   scroll: {
     flex: 1,

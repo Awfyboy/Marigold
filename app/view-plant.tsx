@@ -1,4 +1,4 @@
-import {
+﻿import {
   StyleSheet,
   Text,
   View,
@@ -95,9 +95,13 @@ export default function ViewPlantScreen() {
           size={24}
           color={Colors.navGreen}
         />
-        <Pressable onPress={() => router.push(`/edit-plant?id=${plant.id}`)}>
-          <Text style={styles.headerEdit}>Edit</Text>
-        </Pressable>
+        <IconButton
+          icon="pencil"
+          label="Edit"
+          onPress={() => router.push(`/edit-plant?id=${plant.id}`)}
+          size={24}
+          color={Colors.navGreen}
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -223,12 +227,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  headerEdit: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.navGreen,
-    fontFamily: Fonts.body,
   },
   scrollContent: {
     paddingBottom: 64,
