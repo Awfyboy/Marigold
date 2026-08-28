@@ -21,6 +21,9 @@ import {
   markFertilized,
   getNextWateringDate,
   getNextFertilizingDate,
+  getDaysOverdue,
+  getFertilizingDaysOverdue,
+  formatDueDate,
   formatFullDate,
   Plant,
 } from '@/utils/plantStorage';
@@ -147,7 +150,16 @@ export default function ViewPlantScreen() {
           </Text>
         </View>
         <View style={styles.careRow}>
-          <Text style={styles.careLabel}>Next watering</Text>
+          <View style={styles.careValueRow}>
+            <Text style={styles.careLabel}>Next watering</Text>
+            <Text
+              style={[styles.dueTag, getDaysOverdue(plant) > 0 && styles.dueTagOverdue]}
+            >
+              {getDaysOverdue(plant) > 0
+                ? `${getDaysOverdue(plant)}d overdue`
+                : formatDueDate(getNextWateringDate(plant))}
+            </Text>
+          </View>
           <Text style={styles.careValue}>{formatFullDate(getNextWateringDate(plant))}</Text>
         </View>
         <View style={styles.careRow}>
@@ -157,7 +169,19 @@ export default function ViewPlantScreen() {
           </Text>
         </View>
         <View style={styles.careRow}>
-          <Text style={styles.careLabel}>Next fertilizing</Text>
+          <View style={styles.careValueRow}>
+            <Text style={styles.careLabel}>Next fertilizing</Text>
+            <Text
+              style={[
+                styles.dueTag,
+                getFertilizingDaysOverdue(plant) > 0 && styles.dueTagOverdue,
+              ]}
+            >
+              {getFertilizingDaysOverdue(plant) > 0
+                ? `${getFertilizingDaysOverdue(plant)}d overdue`
+                : formatDueDate(getNextFertilizingDate(plant))}
+            </Text>
+          </View>
           <Text style={styles.careValue}>{formatFullDate(getNextFertilizingDate(plant))}</Text>
         </View>
 
@@ -289,6 +313,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000',
     fontFamily: Fonts.body,
+  },
+  careValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  dueTag: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#ffffff',
+    backgroundColor: Colors.navGreen,
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    overflow: 'hidden',
+  },
+  dueTagOverdue: {
+    backgroundColor: Colors.errorRed,
   },
   notes: {
     fontSize: 14,
