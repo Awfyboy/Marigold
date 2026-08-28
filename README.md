@@ -87,6 +87,9 @@ npx expo start --web
 <img src="screenshots/edit1.jpg" alt="edit" width="250"/>
 <img src="screenshots/edit2.jpg" alt="edit2" width="250"/>
 
+- **Care Schedule** - View the full schedule of tasks that are either due or upcoming for your plants.
+<img src="screenshots/schedule1.jpg" alt="schedule" width="250"/>
+
 - **Settings** - Allow user to delete all data, or view the about section.
 <img src="screenshots/settings.jpg" alt="settings" width="250"/>
 
