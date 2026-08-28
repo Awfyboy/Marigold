@@ -1,6 +1,6 @@
 # Marigold - Plant Care App
 
-<img src="Marigold\assets\marigold-icon-bg.png" alt="drawing" width="200"/>
+<img src="Marigold/assets/marigold-icon-bg.png" alt="drawing" width="200"/>
 
 Marigold is a Expo Go mobile application designed to help users
 manage and care for their houseplants. Users can add plants, store information about them, track watering and
