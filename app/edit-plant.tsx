@@ -201,7 +201,7 @@ export default function EditPlantScreen() {
           onPress: async () => {
             try {
               await deletePlant(plant.id);
-              router.back();
+              router.replace('/tabs/plants');
             } catch (error) {
               console.error('Failed to delete plant:', error);
               Alert.alert('Error', 'Something went wrong while deleting. Please try again.');

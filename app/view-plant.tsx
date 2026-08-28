@@ -45,7 +45,7 @@ export default function ViewPlantScreen() {
           setPlant(found);
         } else {
           Alert.alert('Not found', 'This plant no longer exists.', [
-            { text: 'OK', onPress: () => router.back() },
+            { text: 'OK', onPress: () => router.replace('@/plants') },
           ]);
         }
         setIsLoading(false);
@@ -131,14 +131,14 @@ export default function ViewPlantScreen() {
         </View>
         <View style={styles.infoRow}>
           <View style={styles.infoLabel}>
-            <Ionicons name="sunny" size={16} color="#e0a832" />
+            <Ionicons name="sunny" size={16} color={Colors.sunlightYellow} />
             <Text style={styles.infoLabelText}>Light</Text>
           </View>
           <Text style={styles.infoValue}>{plant.sunlight}</Text>
         </View>
         <View style={styles.infoRow}>
           <View style={styles.infoLabel}>
-            <Ionicons name="location" size={16} color="#8a63c9" />
+            <Ionicons name="location" size={16} color={Colors.locationPurple} />
             <Text style={styles.infoLabelText}>Location</Text>
           </View>
           <Text style={styles.infoValue}>{plant.location}</Text>
