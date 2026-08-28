@@ -63,7 +63,7 @@ npx expo start --web
 - This application was developed using **Expo SDK 54**, as that is the version supported by the official apps on Google Play Store and App Store. The project dependencies are defined in `package.json` and will be installed automatically when running `npm install`.
 
 - You can test the application using DEV buttons. Go to 'index.tsx' and find Line 350. You will find commented DEV code. Once you uncomment it, saving the changes should show some DEV buttons below the Home screen. Use these to quickly test schedule changes of plants.
-<img src="screenshots/code1.png" alt="screen" width="400"/>
+<img src="screenshots/code1.png" alt="screen" width="600"/>
 <img src="screenshots/code2.jpg" alt="screen" width="200"/>
 
 ---
