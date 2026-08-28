@@ -273,7 +273,7 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Today's Tasks (watering + fertilizing combined) */}
+        {/* Today's Tasks */}
         {todayTasks.length > 0 && (
           <View style={styles.todaySection}>
             <Text style={[styles.sectionTitle, styles.panelTitle]}>Today's Tasks</Text>
@@ -347,7 +347,7 @@ export default function Index() {
           ))}
         </View>
 
-        {/* TEMPORARY dev helpers. */}
+        {/* TEMPORARY dev helpers. You can uncomment this to test scheduling*/}
         {/* <View style={styles.debugRow}>
           <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
             <Text style={styles.debugButtonText}>
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 
-  // TEMPORARY dev helper styles. Remove before release.
+  // TEMPORARY dev helper styles
   debugRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',

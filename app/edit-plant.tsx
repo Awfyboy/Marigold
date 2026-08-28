@@ -351,7 +351,7 @@ export default function EditPlantScreen() {
             numberOfLines={4}
           />
 
-          {/* Delete Plant — separate destructive action at the bottom */}
+          {/* Delete Plant */}
           <View style={styles.deleteDivider} />
           <Pressable style={styles.deleteButton} onPress={handleDeletePlant}>
             <Text style={styles.deleteButtonText}>Delete Plant</Text>

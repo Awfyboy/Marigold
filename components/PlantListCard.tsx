@@ -30,10 +30,8 @@ export default function PlantListCard({
 
   return (
     <Pressable style={[styles.card, style]} onPress={onPress}>
-      {/* Left: image */}
       <Image source={{ uri: plant.imageUri }} style={styles.image} />
 
-      {/* Center: name + (optional) due date / overdue badge */}
       <View style={styles.info}>
         <Text style={styles.name} numberOfLines={1}>
           {plant.name}
@@ -54,7 +52,6 @@ export default function PlantListCard({
         )}
       </View>
 
-      {/* Right: task tag pill + optional done button, on one row */}
       <View style={styles.right}>
         <View style={[styles.actionPill, { backgroundColor: isWater ? Colors.waterBlue : Colors.fertileGreen }]}>
           <Ionicons name={actionIcon} size={12} color="#ffffff" />
