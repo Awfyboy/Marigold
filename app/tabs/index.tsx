@@ -192,7 +192,7 @@ export default function Index() {
       <View style={styles.container}>
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>🌱</Text>
-          <Text style={styles.emptyTitle}>No plants yet</Text>
+          <Text style={styles.emptyTitle}>No Plants Yet!</Text>
           <Text style={styles.emptySubtitle}>
             Start building your garden by adding your first plant.
           </Text>
@@ -276,7 +276,7 @@ export default function Index() {
         {/* Today's Tasks (watering + fertilizing combined) */}
         {todayTasks.length > 0 && (
           <View style={styles.todaySection}>
-            <Text style={styles.sectionTitle}>Today's Tasks</Text>
+            <Text style={[styles.sectionTitle, styles.panelTitle]}>Today's Tasks</Text>
             <View style={styles.taskList}>
               {todayTasks.map((task) => {
                 const overdueDays =
@@ -514,6 +514,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 20,
     borderRadius: 12,
+  },
+  panelTitle: {
+    marginTop: 0,
   },
 
   // Upcoming

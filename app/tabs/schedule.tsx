@@ -103,7 +103,7 @@ export default function ScheduleScreen() {
 
         {todayTasks.length > 0 && (
           <View style={styles.todaySection}>
-            <Text style={styles.sectionTitle}>Today</Text>
+            <Text style={[styles.sectionTitle, styles.panelTitle]}>Today</Text>
             <View style={styles.taskList}>
               {todayTasks.map((task) => {
                 const overdueDays =
@@ -201,6 +201,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     marginHorizontal: 12,
     borderRadius: 12,
+  },
+  panelTitle: {
+    marginTop: 0,
   },
   taskList: {
     gap: 12,
