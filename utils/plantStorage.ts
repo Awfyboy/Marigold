@@ -135,3 +135,36 @@ export function getNextFertilizingDate(plant: Plant): Date {
   );
   return next;
 }
+
+// Whole days between the watering due date and today (positive = overdue)
+export function getDaysOverdue(plant: Plant): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = getNextWateringDate(plant);
+  due.setHours(0, 0, 0, 0);
+  return Math.round((today.getTime() - due.getTime()) / 86400000);
+}
+
+// Whole days between the fertilizing due date and today (positive = overdue)
+export function getFertilizingDaysOverdue(plant: Plant): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = getNextFertilizingDate(plant);
+  due.setHours(0, 0, 0, 0);
+  return Math.round((today.getTime() - due.getTime()) / 86400000);
+}
+
+export function formatDueDate(date: Date): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(date);
+  due.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.round((due.getTime() - today.getTime()) / 86400000);
+  if (diffDays <= 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays < 7) return `In ${diffDays} days`;
+  if (diffDays < 30) return `In ${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? 's' : ''}`;
+  const months = Math.floor(diffDays / 30);
+  return `In ${months} month${months > 1 ? 's' : ''}`;
+}

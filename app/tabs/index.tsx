@@ -21,57 +21,28 @@ import {
   getNextFertilizingDate,
   getWateringIntervalDays,
   getFertilizingIntervalDays,
+  getDaysOverdue,
+  getFertilizingDaysOverdue,
   updatePlant,
   Plant,
 } from '@/utils/plantStorage';
+import PlantListCard from '@/components/PlantListCard';
 
-const PREVIEW_COUNT = 3;
+type TaskAction = 'Water' | 'Fertilize';
 
-const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
-  Herb: 'leaf',
-  Flower: 'flower',
-  Fruit: 'nutrition',
+type Task = {
+  plant: Plant;
+  action: TaskAction;
+  dueDate: Date;
 };
 
-function getPlantTypeIcon(plant: Plant): keyof typeof Ionicons.glyphMap {
-  return (plant.types.length > 0 && TYPE_ICONS[plant.types[0]]) || 'leaf';
-}
+const PREVIEW_COUNT = 3;
 
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
-}
-
-// Whole days between the due date and today (positive = overdue)
-function getDaysOverdue(plant: Plant): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = getNextWateringDate(plant);
-  due.setHours(0, 0, 0, 0);
-  return Math.round((today.getTime() - due.getTime()) / 86400000);
-}
-
-// Whole days between the fertilizing due date and today (positive = overdue)
-function getFertilizingDaysOverdue(plant: Plant): number {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = getNextFertilizingDate(plant);
-  due.setHours(0, 0, 0, 0);
-  return Math.round((today.getTime() - due.getTime()) / 86400000);
-}
-
-function formatDueDate(date: Date): string {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = new Date(date);
-  due.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.round((due.getTime() - today.getTime()) / 86400000);
-  if (diffDays <= 0) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  return due.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 export default function Index() {
@@ -114,13 +85,30 @@ export default function Index() {
       getFertilizingDaysOverdue(plant) <= 0
   ).length;
 
-  // Upcoming: next 5 due actions after today (watering or fertilizing)
-  const upcoming = plants
+  // Combined today's tasks (watering and/or fertilizing due today or overdue)
+  const todayTasks: Task[] = plants
     .flatMap((plant) => {
       const waterDue = getNextWateringDate(plant);
       const fertDue = getNextFertilizingDate(plant);
       const cutoff = today.getTime() + 86400000 - 1;
-      const actions: { plant: Plant; action: string; dueDate: Date }[] = [];
+      const tasks: Task[] = [];
+      if (waterDue.getTime() <= cutoff) {
+        tasks.push({ plant, action: 'Water', dueDate: waterDue });
+      }
+      if (fertDue.getTime() <= cutoff) {
+        tasks.push({ plant, action: 'Fertilize', dueDate: fertDue });
+      }
+      return tasks;
+    })
+    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+
+  // Upcoming: next 5 due actions after today (watering or fertilizing)
+  const upcoming: Task[] = plants
+    .flatMap((plant) => {
+      const waterDue = getNextWateringDate(plant);
+      const fertDue = getNextFertilizingDate(plant);
+      const cutoff = today.getTime() + 86400000 - 1;
+      const actions: Task[] = [];
       if (waterDue.getTime() > cutoff) {
         actions.push({ plant, action: 'Water', dueDate: waterDue });
       }
@@ -274,76 +262,47 @@ export default function Index() {
           </View>
         </View>
 
-        {/* Today's Watering Tasks */}
-        {dueToday.length > 0 && (
+        {/* Today's Tasks (watering + fertilizing combined) */}
+        {todayTasks.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Today's Watering Tasks</Text>
+            <Text style={styles.sectionTitle}>Today's Tasks</Text>
             <View style={styles.taskList}>
-              {dueToday.map((plant) => (
-                <View key={plant.id} style={styles.taskCard}>
-                  <Image source={{ uri: plant.imageUri }} style={styles.taskImage} />
-                  <View style={styles.taskInfo}>
-                    <Text style={styles.taskName} numberOfLines={1}>
-                      {plant.name}
-                    </Text>
-                    <View style={styles.taskMetaRow}>
-                      <Text style={styles.taskAction}>Water</Text>
-                      {getDaysOverdue(plant) > 0 && (
-                        <View style={styles.overdueBadge}>
-                          <Ionicons name="warning" size={11} color="#ffffff" />
-                          <Text style={styles.overdueBadgeText}>
-                            {getDaysOverdue(plant)}d overdue
-                          </Text>
-                        </View>
-                      )}
+              {todayTasks.map((task) => {
+                const overdueDays =
+                  task.action === 'Water'
+                    ? getDaysOverdue(task.plant)
+                    : getFertilizingDaysOverdue(task.plant);
+                return (
+                  <View key={`${task.plant.id}-${task.action}`} style={styles.taskCard}>
+                    <Image source={{ uri: task.plant.imageUri }} style={styles.taskImage} />
+                    <View style={styles.taskInfo}>
+                      <Text style={styles.taskName} numberOfLines={1}>
+                        {task.plant.name}
+                      </Text>
+                      <View style={styles.taskMetaRow}>
+                        <Text style={styles.taskAction}>{task.action}</Text>
+                        {overdueDays > 0 && (
+                          <View style={styles.overdueBadge}>
+                            <Ionicons name="warning" size={11} color="#ffffff" />
+                            <Text style={styles.overdueBadgeText}>{overdueDays}d overdue</Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
+                    <Pressable
+                      style={styles.doneButton}
+                      onPress={() =>
+                        task.action === 'Water'
+                          ? handleMarkWatered(task.plant)
+                          : handleMarkFertilized(task.plant)
+                      }
+                    >
+                      <Ionicons name="checkmark" size={16} color={Colors.navYellow} />
+                      <Text style={styles.doneButtonText}>Done</Text>
+                    </Pressable>
                   </View>
-                  <Pressable
-                    style={styles.doneButton}
-                    onPress={() => handleMarkWatered(plant)}
-                  >
-                    <Ionicons name="checkmark" size={16} color={Colors.navYellow} />
-                    <Text style={styles.doneButtonText}>Done</Text>
-                  </Pressable>
-                </View>
-              ))}
-            </View>
-          </>
-        )}
-
-        {/* Today's Fertilizing Tasks */}
-        {dueTodayFertilizing.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>Today's Fertilizing Tasks</Text>
-            <View style={styles.taskList}>
-              {dueTodayFertilizing.map((plant) => (
-                <View key={plant.id} style={styles.taskCard}>
-                  <Image source={{ uri: plant.imageUri }} style={styles.taskImage} />
-                  <View style={styles.taskInfo}>
-                    <Text style={styles.taskName} numberOfLines={1}>
-                      {plant.name}
-                    </Text>
-                    <View style={styles.taskMetaRow}>
-                      <Text style={styles.taskAction}>Fertilize</Text>
-                      {getFertilizingDaysOverdue(plant) > 0 && (
-                        <View style={styles.overdueBadge}>
-                          <Ionicons name="warning" size={11} color="#ffffff" />
-                          <Text style={styles.overdueBadgeText}>
-                            {getFertilizingDaysOverdue(plant)}d overdue
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                  <Pressable
-                    style={styles.doneButton}
-                    onPress={() => handleMarkFertilized(plant)}
-                  >
-                    <Ionicons name="checkmark" size={16} color={Colors.navYellow} />
-                    <Text style={styles.doneButtonText}>Done</Text>
-                  </Pressable>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </>
         )}
@@ -352,37 +311,32 @@ export default function Index() {
         {upcoming.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Upcoming</Text>
-            <View style={styles.upcomingCard}>
-              {upcoming.map((item, index) => {
-                const dueDate = item.dueDate;
-                const showDateHeader =
-                  index === 0 ||
-                  formatDueDate(upcoming[index - 1].dueDate) !==
-                    formatDueDate(dueDate);
-
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.upcomingList}
+            >
+              {upcoming.map((task) => {
+                const overdueDays =
+                  task.action === 'Water'
+                    ? getDaysOverdue(task.plant)
+                    : getFertilizingDaysOverdue(task.plant);
                 return (
-                  <View key={`${item.plant.id}-${item.action}`}>
-                    {showDateHeader && (
-                      <Text style={styles.upcomingDate}>{formatDueDate(dueDate)}</Text>
-                    )}
-                    <View style={styles.upcomingRow}>
-                      <Ionicons
-                        name={getPlantTypeIcon(item.plant)}
-                        size={16}
-                        color={Colors.navGreen}
-                      />
-                      <Text style={styles.upcomingPlantName} numberOfLines={1}>
-                        {item.plant.name}
-                      </Text>
-                      <Text style={styles.upcomingAction}>{item.action}</Text>
-                    </View>
-                  </View>
+                  <PlantListCard
+                    key={`${task.plant.id}-${task.action}`}
+                    plant={task.plant}
+                    action={task.action}
+                    dueDate={task.dueDate}
+                    overdueDays={overdueDays}
+                    onPress={() => router.push(`/edit-plant?id=${task.plant.id}`)}
+                    style={styles.upcomingCard}
+                  />
                 );
               })}
-              <Pressable onPress={() => router.push('/tabs/schedule')}>
+              <Pressable onPress={() => router.push('/tabs/schedule')} style={styles.seeScheduleWrap}>
                 <Text style={styles.seeScheduleLink}>See schedule →</Text>
               </Pressable>
-            </View>
+            </ScrollView>
           </>
         )}
 
@@ -409,7 +363,7 @@ export default function Index() {
         </View>
 
         {/* TEMPORARY dev helpers. Remove before release. */}
-        <View style={styles.debugRow}>
+        {/* <View style={styles.debugRow}>
           <Pressable style={styles.debugButton} onPress={() => simulateDue(0)}>
             <Text style={styles.debugButtonText}>
               DEV: Make "{plants[plants.length - 1]?.name}" due today
@@ -436,7 +390,7 @@ export default function Index() {
           <Pressable style={styles.debugButton} onPress={simulateAnotherFertilizeDue}>
             <Text style={styles.debugButtonText}>DEV: Make another plant need fertilizing today</Text>
           </Pressable>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );
@@ -637,46 +591,23 @@ const styles = StyleSheet.create({
   },
 
   // Upcoming
+  upcomingList: {
+    paddingHorizontal: 16,
+    gap: 12,
+    paddingBottom: 4,
+  },
   upcomingCard: {
-    backgroundColor: Colors.bgYellow,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.navGreen,
-    padding: 16,
-    marginHorizontal: 16,
+    width: 240,
   },
-  upcomingDate: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.navGreen,
-    fontFamily: Fonts.body,
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  upcomingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 6,
-  },
-  upcomingPlantName: {
-    flex: 1,
-    fontSize: 14,
-    color: '#000',
-    fontFamily: Fonts.body,
-  },
-  upcomingAction: {
-    fontSize: 13,
-    color: Colors.navGreen,
-    fontWeight: '600',
-    fontFamily: Fonts.body,
+  seeScheduleWrap: {
+    justifyContent: 'center',
+    paddingHorizontal: 4,
   },
   seeScheduleLink: {
     fontSize: 13,
     color: Colors.navGreen,
     fontWeight: '600',
     fontFamily: Fonts.body,
-    marginTop: 12,
   },
 
   // Your Plants preview
