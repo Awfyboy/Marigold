@@ -9,7 +9,9 @@ type Props = {
   action: 'Water' | 'Fertilize';
   dueDate: Date;
   overdueDays?: number;
+  showDueDate?: boolean;
   onPress?: () => void;
+  onDone?: () => void;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -18,7 +20,9 @@ export default function PlantListCard({
   action,
   dueDate,
   overdueDays = 0,
+  showDueDate = true,
   onPress,
+  onDone,
   style,
 }: Props) {
   const isWater = action === 'Water';
@@ -36,22 +40,28 @@ export default function PlantListCard({
         </Text>
       </View>
 
-      {/* Right: task + due date */}
+      {/* Right: task pill + optional due date / done button */}
       <View style={styles.task}>
-        <View style={styles.actionRow}>
-          <Ionicons name={actionIcon} size={13} color={Colors.navGreen} />
-          <Text style={styles.actionText} numberOfLines={1}>
-            {action}
-          </Text>
+        <View style={[styles.actionPill, { backgroundColor: isWater ? Colors.waterBlue : Colors.fertileGreen }]}>
+          <Ionicons name={actionIcon} size={12} color="#ffffff" />
+          <Text style={styles.actionPillText}>{action}</Text>
         </View>
-        <Text style={[styles.dueText, overdueDays > 0 && styles.dueOverdue]} numberOfLines={1}>
-          {formatDueDate(dueDate)}
-        </Text>
-        {overdueDays > 0 && (
+        {showDueDate && (
+          <Text style={[styles.dueText, overdueDays > 0 && styles.dueOverdue]} numberOfLines={1}>
+            {formatDueDate(dueDate)}
+          </Text>
+        )}
+        {showDueDate && overdueDays > 0 && (
           <View style={styles.overdueBadge}>
             <Ionicons name="warning" size={10} color="#ffffff" />
             <Text style={styles.overdueBadgeText}>{overdueDays}d overdue</Text>
           </View>
+        )}
+        {onDone && (
+          <Pressable style={styles.doneButton} onPress={onDone}>
+            <Ionicons name="checkmark" size={14} color={Colors.navYellow} />
+            <Text style={styles.doneButtonText}>Done</Text>
+          </Pressable>
         )}
       </View>
     </Pressable>
@@ -90,15 +100,18 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     gap: 3,
   },
-  actionRow: {
+  actionPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
   },
-  actionText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.navGreen,
+  actionPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#ffffff',
     fontFamily: Fonts.body,
   },
   dueText: {
@@ -122,6 +135,21 @@ const styles = StyleSheet.create({
   overdueBadgeText: {
     color: '#ffffff',
     fontSize: 10,
+    fontWeight: '700',
+    fontFamily: Fonts.body,
+  },
+  doneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: Colors.navGreen,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  doneButtonText: {
+    color: Colors.navYellow,
+    fontSize: 12,
     fontWeight: '700',
     fontFamily: Fonts.body,
   },

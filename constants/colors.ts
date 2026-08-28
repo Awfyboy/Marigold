@@ -5,6 +5,8 @@ const Colors = {
     navDarkYellow: '#b8e6c4',
     errorRed: '#d9534f',
     cancelRed: '#a13232',
+    waterBlue: '#4165db',
+    fertileGreen: '#3eb62f',
 }
 
 export default Colors
