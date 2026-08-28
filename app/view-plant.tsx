@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useState, useCallback } from 'react';
-import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Stack, useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '@/constants/colors';
@@ -62,6 +62,16 @@ export default function ViewPlantScreen() {
     setPlant((await getPlantById(plant.id)) ?? plant);
   };
 
+  const confirmAction = (action: 'water' | 'fertilize') => {
+    Alert.alert(
+      action === 'water' ? 'Water plant' : 'Fertilize plant',
+      `Would you like to ${action} the plant now?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Yes', onPress: action === 'water' ? handleWater : handleFertilize },
+      ]
+    );
+  };
   if (isLoading || !plant) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -71,7 +81,9 @@ export default function ViewPlantScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <IconButton
@@ -112,14 +124,14 @@ export default function ViewPlantScreen() {
         </View>
         <View style={styles.infoRow}>
           <View style={styles.infoLabel}>
-            <Ionicons name="sunny" size={16} color={Colors.navGreen} />
+            <Ionicons name="sunny" size={16} color="#e0a832" />
             <Text style={styles.infoLabelText}>Light</Text>
           </View>
           <Text style={styles.infoValue}>{plant.sunlight}</Text>
         </View>
         <View style={styles.infoRow}>
           <View style={styles.infoLabel}>
-            <Ionicons name="location" size={16} color={Colors.navGreen} />
+            <Ionicons name="location" size={16} color="#8a63c9" />
             <Text style={styles.infoLabelText}>Location</Text>
           </View>
           <Text style={styles.infoValue}>{plant.location}</Text>
@@ -152,21 +164,22 @@ export default function ViewPlantScreen() {
         {/* Notes section */}
         <View style={styles.divider} />
         <Text style={styles.sectionTitle}>Notes</Text>
-        <Text style={styles.notes}>{plant.notes.trim() ? plant.notes : 'No notes yet.'}</Text>
+        <Text style={styles.notes}>{plant.notes.trim() || 'No notes yet.'}</Text>
 
         {/* Actions */}
         <View style={styles.actionsRow}>
-          <Pressable style={[styles.actionButton, { backgroundColor: Colors.waterBlue }]} onPress={handleWater}>
+          <Pressable style={[styles.actionButton, { backgroundColor: Colors.waterBlue }]} onPress={() => confirmAction('water')}>
             <Ionicons name="water" size={16} color="#ffffff" />
             <Text style={styles.actionButtonText}>Water</Text>
           </Pressable>
-          <Pressable style={[styles.actionButton, { backgroundColor: Colors.fertileGreen }]} onPress={handleFertilize}>
+          <Pressable style={[styles.actionButton, { backgroundColor: Colors.fertileGreen }]} onPress={() => confirmAction('fertilize')}>
             <Ionicons name="leaf" size={16} color="#ffffff" />
             <Text style={styles.actionButtonText}>Fertilize</Text>
           </Pressable>
         </View>
       </ScrollView>
-    </View>
+      </View>
+    </>
   );
 }
 
@@ -194,12 +207,14 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.body,
   },
   scrollContent: {
-    paddingBottom: 32,
+    paddingBottom: 64,
   },
   image: {
-    width: '100%',
-    height: 220,
-    backgroundColor: Colors.navDarkYellow,
+    alignSelf: 'stretch',
+    height: 350,
+    marginHorizontal: 16,
+    borderRadius: 8,
+    resizeMode: 'cover',
   },
   name: {
     fontSize: 24,
