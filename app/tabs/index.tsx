@@ -100,6 +100,9 @@ export default function Index() {
     })
     .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 
+  // Distinct plants needing attention today (due or overdue, watering or fertilizing)
+  const attentionCount = new Set(todayTasks.map((task) => task.plant.id)).size;
+
   // Upcoming: next 5 due actions after today (watering or fertilizing)
   const upcoming: Task[] = plants
     .flatMap((plant) => {
@@ -213,7 +216,11 @@ export default function Index() {
           {getGreeting()} <Text style={styles.greetingEmoji}>🌱</Text>
         </Text>
         <Text style={styles.greetingSubtitle}>
-          You have {plants.length} plant{plants.length > 1 ? 's' : ''} in your garden.
+          {attentionCount > 0
+            ? `${attentionCount} plant${attentionCount > 1 ? 's' : ''} require${
+                attentionCount > 1 ? '' : 's'
+              } attention today.`
+            : 'Your plants look happy today!'}
         </Text>
 
         {/* Water today card */}
@@ -228,7 +235,7 @@ export default function Index() {
                 {waterOverdueCount > 0 && (
                   <Text style={styles.overdueCountText}>
                     {waterOverdueCount} plant{waterOverdueCount > 1 ? 's are' : ' is'} overdue!
-                    {'\n'}
+                    {waterDueTodayCount > 0 ? '\n' : ''}
                   </Text>
                 )}
                 {waterDueTodayCount > 0
@@ -253,7 +260,7 @@ export default function Index() {
                 {fertOverdueCount > 0 && (
                   <Text style={styles.overdueCountText}>
                     {fertOverdueCount} plant{fertOverdueCount > 1 ? 's are' : ' is'} overdue!
-                    {'\n'}
+                    {fertDueTodayCount > 0 ? '\n' : ''}
                   </Text>
                 )}
                 {fertDueTodayCount > 0
