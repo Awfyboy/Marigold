@@ -28,6 +28,7 @@ const PLANT_TYPES = [
   { label: 'Herb', icon: 'leaf' as const },
   { label: 'Flower', icon: 'flower' as const },
   { label: 'Fruit', icon: 'nutrition' as const },
+  { label: 'Other', icon: 'ellipsis-horizontal' as const}
 ];
 
 const LOCATION_OPTIONS = ['Indoors', 'Outdoors'];

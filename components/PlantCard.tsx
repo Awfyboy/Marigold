@@ -7,6 +7,7 @@ const TYPE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   Herb: 'leaf',
   Flower: 'flower',
   Fruit: 'nutrition',
+  Other: 'ellipsis-horizontal',
 };
 
 type Props = {
