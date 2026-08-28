@@ -289,6 +289,7 @@ export default function EditPlantScreen() {
           {errors.types && <Text style={styles.errorText}>{errors.types}</Text>}
 
           {/* Category 3: Care */}
+          <View style={styles.divider} />
           <Text style={styles.sectionTitle}>Care</Text>
           <Dropdown
             label="Location"
@@ -340,6 +341,7 @@ export default function EditPlantScreen() {
           />
 
           {/* Category 4: Notes */}
+          <View style={styles.divider} />
           <Text style={styles.sectionTitle}>Notes</Text>
           <TextField
             placeholder="Add any notes (optional)..."
@@ -392,6 +394,13 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginHorizontal: 16,
     fontFamily: Fonts.title,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.navGreen,
+    opacity: 0.2,
+    marginHorizontal: 16,
+    marginTop: 20,
   },
   fieldLabel: {
     fontSize: 14,

@@ -132,7 +132,7 @@ export default function ViewPlantScreen() {
         <View style={styles.infoRow}>
           <View style={styles.infoLabel}>
             <Ionicons name="sunny" size={16} color={Colors.sunlightYellow} />
-            <Text style={styles.infoLabelText}>Light</Text>
+            <Text style={styles.infoLabelText}>Sunlight</Text>
           </View>
           <Text style={styles.infoValue}>{plant.sunlight}</Text>
         </View>

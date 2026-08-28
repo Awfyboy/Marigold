@@ -138,7 +138,7 @@ export default function AddPlantScreen() {
         style={styles.container}
         behavior="padding"
       >
-        {/* Header: back + centered title (spacer balances the back button) */}
+        {/* Header */}
         <View style={styles.header}>
           <IconButton
             icon="arrow-back"
@@ -203,6 +203,7 @@ export default function AddPlantScreen() {
           )}
 
           {/* Category 3: Care */}
+          <View style={styles.divider} />
           <Text style={styles.sectionTitle}>Care</Text>
           <Dropdown
             label="Location"
@@ -254,6 +255,7 @@ export default function AddPlantScreen() {
           />
 
           {/* Category 4: Notes */}
+          <View style={styles.divider} />
           <Text style={styles.sectionTitle}>Notes</Text>
           <TextField
             placeholder="Add any notes (optional)..."
@@ -314,6 +316,13 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     marginHorizontal: 16,
     fontFamily: Fonts.title,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Colors.navGreen,
+    opacity: 0.2,
+    marginHorizontal: 16,
+    marginTop: 20,
   },
   fieldLabel: {
     fontSize: 14,
